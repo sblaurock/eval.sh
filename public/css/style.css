@@ -1,3 +1,9 @@
+@keyframes blink {
+  to {
+    opacity: 1;
+  }
+}
+
 html, body {
   height: 100%;
 }
@@ -33,4 +39,9 @@ footer {
 .input:after {
   content: '\a0';
   background: rgba(196, 200, 198, 1);
+  opacity: 0;
+  animation: blink 2s steps(2, start) infinite reverse;
+}
+.input.active:after {
+  opacity: 1 !important;
 }

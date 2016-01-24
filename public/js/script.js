@@ -5,7 +5,8 @@
       input: 'input',
       line: 'line',
       character: 'character',
-      command: 'command'
+      command: 'command',
+      active: 'active'
     }
   };
 
@@ -119,6 +120,9 @@
 
   // Bind events
   var Events = function() {
+    var typing = null;
+    var typingBuffer = 500;
+
     return {
       bind: function() {
 	// Listen for screen scroll
@@ -140,7 +144,14 @@
 	  var commandCharCount = command.length;
 	  var contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
 
-	  $('.' + options.classes.input).append(contents);
+	  // Debounce typing animation pause
+	  clearTimeout(typing);
+	  typing = setTimeout(function() {
+	    input.removeClass(options.classes.active);
+	  }, typingBuffer);
+
+	  input.addClass(options.classes.active);
+	  input.append(contents);
 
 	  // Enter - submit command
 	  if(charCode === 13) {
