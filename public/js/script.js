@@ -1,22 +1,39 @@
 (function() {
+  var options = {
+    debug: false
+  };
+
+  var elements = {
+    screen: $('.screen')
+  };
+
+  var Log = {
+    write: function(string) {
+      if(options.debug) {
+	console.log(string);
+      }
+    }
+  };
+
   var Socket = function() {
     var reference;
 
     return {
       // Connect to socket server
       connect: function() {
-	reference = io(window.location.hostname);
+	reference = io(window.location.origin);
 
 	reference.on('connect_error', function() {
-	  console.log('Socket server could not be contacted');
+	  Log.write('Socket server could not be contacted');
 	});
 
 	reference.on('connect', function() {
-	  console.log('Connected to socket server');
+	  Log.write('Connected to socket server');
+	  Output.write.line('Connected to socket');
 	});
 
 	reference.on('disconnect', function() {
-	  console.log('Disconnected from socket server');
+	  Log.write('Disconnected from socket server');
 	});
       },
 
@@ -39,6 +56,19 @@
 	return reference;
       }
     };
+  }();
+
+  var Output = function() {
+    return {
+      write: {
+	line: function(string) {
+	  var contents = $('<div>' + string + '</div>');
+
+	  elements.screen.append(contents);
+	  elements.screen.scrollTop(elements.screen[0].scrollHeight);
+	}
+      }
+    }
   }();
 
   Socket.connect();

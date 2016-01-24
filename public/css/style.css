@@ -1,12 +1,28 @@
+html, body {
+  height: 100%;
+}
+
 body {
-  background: #111;
+  background: rgba(18, 18, 18, 1);
   font-family: monospace;
+  font-size: 12px;
 }
 
 footer {
   position: absolute;
   bottom: 15px;
   right: 17px;
-  color: #222;
+  color: rgba(39, 41, 45, 1);
   font-size: 80%;
+}
+
+.screen {
+  position: absolute;
+  top: 65px;
+  left: 70px;
+  color: rgba(196, 200, 198, 1);
+  overflow: scroll;
+  width: calc(100% - 140px);
+  height: calc(100% - 130px);
+  line-height: 150%;
 }
