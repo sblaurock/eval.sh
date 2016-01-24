@@ -100,12 +100,18 @@
   }();
 
   var Shell = function() {
-    var map = {};
+    var map = {
+      'clear': function() {
+	Output.clear();
+      }
+    };
 
     return {
       process: function(command) {
-	if(!map.command) {
+	if(!map[command]) {
 	  Output.write(command + ': command not found');
+	} else {
+	  map[command]();
 	}
       }
     }
@@ -115,6 +121,17 @@
   var Events = function() {
     return {
       bind: function() {
+	// Listen for screen scroll
+	elements.screen.bind('mousewheel', function(e) {
+	  var lineHeight = 36;
+
+	  if(e.originalEvent.wheelDelta / 120 > 0) {
+	    elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
+	  } else {
+	    elements.screen.scrollTop(elements.screen.scrollTop() + lineHeight);
+	  }
+	});
+
 	// Listen for keypress, write to input
 	elements.document.keypress(function(e) {
 	  var charCode = e.which;
@@ -177,6 +194,10 @@
   // Write text to "screen"
   var Output = function() {
     return {
+      clear: function() {
+	elements.screen.html('');
+	Output.write('');
+      },
       write: function(string, command) {
 	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + '</div>');
 	var input = $('<div class="' + options.classes.input + '"></div>');

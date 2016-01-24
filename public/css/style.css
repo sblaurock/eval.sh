@@ -21,10 +21,10 @@ footer {
   top: 65px;
   left: 70px;
   color: rgba(196, 200, 198, 1);
-  overflow: scroll;
+  overflow: hidden;
   width: calc(100% - 140px);
   height: calc(100% - 130px);
-  line-height: 150%;
+  line-height: 18px;
 }
 
 .input:before, .command:before {
