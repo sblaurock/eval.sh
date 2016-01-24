@@ -99,33 +99,48 @@
     }
   }();
 
+  var Shell = function() {
+    var map = {};
+
+    return {
+      process: function(command) {
+	if(!map.command) {
+	  Output.write(command + ': command not found');
+	}
+      }
+    }
+  }();
+
   // Bind events
   var Events = function() {
     return {
       bind: function() {
 	// Listen for keypress, write to input
 	elements.document.keypress(function(e) {
-	  var contents = null;
 	  var charCode = e.which;
 	  var input = $('.' + options.classes.input);
 	  var command = input.text();
 	  var commandCharCount = command.length;
+	  var contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
+
+	  $('.' + options.classes.input).append(contents);
 
 	  // Enter - submit command
 	  if(charCode === 13) {
 	    Output.write(command, true);
 
-	    if(commandCharCount > 1) {
-	      Output.write(command + ': command not found');
+	    if(commandCharCount) {
+	      Shell.process(command);
 	    }
 
 	    Stack.push(command);
 	    Stack.reset();
 	  }
 
-	  contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
-
-	  $('.' + options.classes.input).append(contents);
+	  // Ctrl-c - submit empty command
+	  if(e.ctrlKey && charCode === 3) {
+	    Output.write(command, true);
+	  }
 	});
 
 	elements.document.keydown(function(e) {
