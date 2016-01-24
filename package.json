@@ -13,6 +13,7 @@
   "homepage": "https://github.com/sblaurock/evalsh#readme",
   "dependencies": {
     "body-parser": "^1.14.2",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "newrelic": "^1.25.0"
   }
 }

@@ -7,6 +7,7 @@ var options = {
 var app = require('express')();
 var bodyParser = require('body-parser');
 var system = require("./utils/system");
+var newrelic = require('newrelic');
 
 system.guardUID();
 app.use(bodyParser.json());
