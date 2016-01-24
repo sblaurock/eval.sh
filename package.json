@@ -1,0 +1,18 @@
+{
+  "name": "evalsh",
+  "version": "1.0.0",
+  "description": "Personal site for @sblaurock.",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sblaurock/evalsh.git"
+  },
+  "author": "sblaurock",
+  "license": "ISC",
+  "homepage": "https://github.com/sblaurock/evalsh#readme",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "express": "^4.13.4"
+  }
+}
