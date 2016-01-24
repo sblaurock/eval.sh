@@ -1,0 +1,12 @@
+body {
+  background: #111;
+  font-family: monospace;
+}
+
+footer {
+  position: absolute;
+  bottom: 15px;
+  right: 17px;
+  color: #222;
+  font-size: 80%;
+}
