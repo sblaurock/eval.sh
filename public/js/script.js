@@ -6,7 +6,12 @@
       line: 'line',
       character: 'character',
       command: 'command',
-      active: 'active'
+      active: 'active',
+      timestamp: 'timestamp',
+      text: {
+	comment: 'text-comment',
+	highlight: 'text-highlight'
+      }
     }
   };
 
@@ -17,6 +22,7 @@
 
   // Log to console
   var Log = {
+    // Write log entry
     write: function(string) {
       if(options.debug) {
 	console.log(string);
@@ -39,7 +45,6 @@
 
 	reference.on('connect', function() {
 	  Log.write('Connected to socket server');
-	  Output.write('Connected to socket');
 	});
 
 	reference.on('disconnect', function() {
@@ -74,13 +79,18 @@
     var current = null;
 
     return {
+      // Push a command to stack
       push: function(string) {
 	current++;
 	stack.push(string);
       },
+
+      // Reset current stack value
       reset: function() {
 	current = stack.length;
       },
+
+      // Get previous stack value
       prev: function() {
 	if(current === null) {
 	  current = stack.length - 1;
@@ -90,6 +100,8 @@
 
 	return stack[current];
       },
+
+      // Get next stack value
       next: function() {
 	if(current < stack.length) {
 	  current++;
@@ -100,6 +112,7 @@
     }
   }();
 
+  // Handle "shell"
   var Shell = function() {
     var map = {
       'clear': function() {
@@ -108,6 +121,7 @@
     };
 
     return {
+      // Process command
       process: function(command) {
 	if(!map[command]) {
 	  Output.write(command + ': command not found');
@@ -118,12 +132,13 @@
     }
   }();
 
-  // Bind events
+  // Handle events
   var Events = function() {
     var typing = null;
     var typingBuffer = 500;
 
     return {
+      // Bind events
       bind: function() {
 	// Listen for screen scroll
 	elements.screen.bind('mousewheel', function(e) {
@@ -155,7 +170,7 @@
 
 	  // Enter - submit command
 	  if(charCode === 13) {
-	    Output.write(command, true);
+	    Output.write('<span class="' + options.classes.text.highlight + '">' + command + '</span>', true);
 
 	    if(commandCharCount) {
 	      Shell.process(command);
@@ -167,7 +182,7 @@
 
 	  // Ctrl-c - submit empty command
 	  if(e.ctrlKey && charCode === 3) {
-	    Output.write(command, true);
+	    Output.write('<span class="' + options.classes.text.highlight + '">' + command + '</span>', true);
 	  }
 	});
 
@@ -202,15 +217,20 @@
     };
   }();
 
-  // Write text to "screen"
+  // Handle "screen"
   var Output = function() {
     return {
+      // Clear "screen"
       clear: function() {
 	elements.screen.html('');
 	Output.write('');
       },
+
+      // Write text to "screen"
       write: function(string, command) {
-	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + '</div>');
+	var date = (new Date()).toLocaleTimeString();
+	var timestamp = (command ? '<div class="' + options.classes.timestamp + ' ' + options.classes.text.comment + '">' + date + '</div>' : '');
+	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + timestamp + '</div>');
 	var input = $('<div class="' + options.classes.input + '"></div>');
 
 	$('.' + options.classes.input).remove();
@@ -223,4 +243,5 @@
 
   Socket.connect();
   Events.bind();
+  Output.write('');
 }());

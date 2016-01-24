@@ -33,7 +33,11 @@ nunjucks.configure('views', {
 });
 
 app.get('/', function(req, res) {
-  res.render('index.html');
+  res.render('index.html', {
+    user: {
+      ip: req.connection.remoteAddress
+    }
+  });
 });
 
 http.listen(app.get('port'), function() {
