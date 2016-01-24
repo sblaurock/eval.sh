@@ -28,7 +28,7 @@ footer {
 }
 
 .input:before, .command:before {
-  content: '$ ';
+  content: '# ';
 }
 .input:after {
   content: '\a0';

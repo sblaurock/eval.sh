@@ -67,35 +67,90 @@
     };
   }();
 
+  // Command stack
+  var Stack = function() {
+    var stack = [];
+    var current = null;
+
+    return {
+      push: function(string) {
+	current++;
+	stack.push(string);
+      },
+      reset: function() {
+	current = stack.length;
+      },
+      prev: function() {
+	if(current === null) {
+	  current = stack.length - 1;
+	} else if(current) {
+	  current--;
+	}
+
+	return stack[current];
+      },
+      next: function() {
+	if(current < stack.length) {
+	  current++;
+	}
+
+	return stack[current];
+      }
+    }
+  }();
+
   // Bind events
   var Events = function() {
     return {
       bind: function() {
 	// Listen for keypress, write to input
-	elements.document.keypress(function(event) {
+	elements.document.keypress(function(e) {
 	  var contents = null;
+	  var charCode = e.which;
+	  var input = $('.' + options.classes.input);
+	  var command = input.text();
+	  var commandCharCount = command.length;
 
-	  // Enter
-	  if(event.which === 13) {
-	    var command = $('.' + options.classes.input).html();
-
+	  // Enter - submit command
+	  if(charCode === 13) {
 	    Output.write(command, true);
-	    Output.write(command + ': command not found');
+
+	    if(commandCharCount > 1) {
+	      Output.write(command + ': command not found');
+	    }
+
+	    Stack.push(command);
+	    Stack.reset();
 	  }
 
-	  contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(event.which) + '</span>');
+	  contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
 
 	  $('.' + options.classes.input).append(contents);
 	});
 
-	// Prevent backspace key from navigating to previous page
 	elements.document.keydown(function(e) {
 	  var nodeName = e.target.nodeName.toLowerCase();
+	  var charCode = e.which;
 
-	  if (e.which === 8) {
-	    if ((nodeName === 'input' && e.target.type === 'text') || nodeName === 'textarea') {
+	  // Up - recall command
+	  if(e.which === 38) {
+	    $('.' + options.classes.input).html(Stack.prev());
+	  }
+
+	  // Down - recall command
+	  if(e.which === 40) {
+	    $('.' + options.classes.input).html(Stack.next());
+	  }
+
+	  // Tab and backspace - prevent default actions
+	  if(e.which === 8 || e.which === 9) {
+	    if((nodeName === 'input' && e.target.type === 'text') || nodeName === 'textarea') {
 	    } else {
-	      $('.' + options.classes.character).last().remove();
+	      // Backspace
+	      if(e.which === 8) {
+		$('.' + options.classes.character).last().remove();
+	      }
+
 	      e.preventDefault();
 	    }
 	  }
