@@ -1,12 +1,20 @@
 (function() {
   var options = {
-    debug: false
+    debug: false,
+    classes: {
+      input: 'input',
+      line: 'line',
+      character: 'character',
+      command: 'command'
+    }
   };
 
   var elements = {
+    document: $(document),
     screen: $('.screen')
   };
 
+  // Log to console
   var Log = {
     write: function(string) {
       if(options.debug) {
@@ -15,6 +23,7 @@
     }
   };
 
+  // Handle socket related events
   var Socket = function() {
     var reference;
 
@@ -29,7 +38,7 @@
 
 	reference.on('connect', function() {
 	  Log.write('Connected to socket server');
-	  Output.write.line('Connected to socket');
+	  Output.write('Connected to socket');
 	});
 
 	reference.on('disconnect', function() {
@@ -58,18 +67,58 @@
     };
   }();
 
+  // Bind events
+  var Events = function() {
+    return {
+      bind: function() {
+	// Listen for keypress, write to input
+	elements.document.keypress(function(event) {
+	  var contents = null;
+
+	  // Enter
+	  if(event.which === 13) {
+	    var command = $('.' + options.classes.input).html();
+
+	    Output.write(command, true);
+	    Output.write(command + ': command not found');
+	  }
+
+	  contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(event.which) + '</span>');
+
+	  $('.' + options.classes.input).append(contents);
+	});
+
+	// Prevent backspace key from navigating to previous page
+	elements.document.keydown(function(e) {
+	  var nodeName = e.target.nodeName.toLowerCase();
+
+	  if (e.which === 8) {
+	    if ((nodeName === 'input' && e.target.type === 'text') || nodeName === 'textarea') {
+	    } else {
+	      $('.' + options.classes.character).last().remove();
+	      e.preventDefault();
+	    }
+	  }
+	});
+      }
+    };
+  }();
+
+  // Write text to "screen"
   var Output = function() {
     return {
-      write: {
-	line: function(string) {
-	  var contents = $('<div>' + string + '</div>');
+      write: function(string, command) {
+	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + '</div>');
+	var input = $('<div class="' + options.classes.input + '"></div>');
 
-	  elements.screen.append(contents);
-	  elements.screen.scrollTop(elements.screen[0].scrollHeight);
-	}
+	$('.' + options.classes.input).remove();
+	elements.screen.append(contents);
+	elements.screen.append(input);
+	elements.screen.scrollTop(elements.screen[0].scrollHeight);
       }
-    }
+    };
   }();
 
   Socket.connect();
+  Events.bind();
 }());

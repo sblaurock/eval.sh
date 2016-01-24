@@ -26,3 +26,11 @@ footer {
   height: calc(100% - 130px);
   line-height: 150%;
 }
+
+.input:before, .command:before {
+  content: '$ ';
+}
+.input:after {
+  content: '\a0';
+  background: rgba(196, 200, 198, 1);
+}
