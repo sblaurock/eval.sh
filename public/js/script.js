@@ -230,7 +230,7 @@
 	return '';
       }
 
-      return string.replace('\n', '<br>');
+      return string.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
     };
 
     return {
@@ -259,7 +259,7 @@
 
   // Initialize
   Events.bind();
-  Output.write('');
+  Output.write('Type "help" to get started');
   Socket.connect();
   Socket.listen('response', function(data) {
     if(data.response === null) {

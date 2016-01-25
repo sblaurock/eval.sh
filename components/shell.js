@@ -22,7 +22,7 @@ var map = {
     return data.id
   },
   'ls': function() {
-    return fs.readdirSync(options.filesystem).join('\n');
+    return fs.readdirSync(options.filesystem).join('\t');
   },
   'cat': function(data) {
     var file = data.args && data.args[0];
