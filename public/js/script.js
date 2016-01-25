@@ -124,7 +124,7 @@
       // Process command
       process: function(command) {
 	if(!map[command]) {
-	  Output.write(command + ': command not found');
+	  Socket.send('command', command);
 	} else {
 	  map[command]();
 	}
@@ -136,14 +136,13 @@
   var Events = function() {
     var typing = null;
     var typingBuffer = 500;
+    var lineHeight = 36;
 
     return {
       // Bind events
       bind: function() {
 	// Listen for screen scroll
 	elements.screen.bind('mousewheel', function(e) {
-	  var lineHeight = 36;
-
 	  if(e.originalEvent.wheelDelta / 120 > 0) {
 	    elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
 	  } else {
@@ -241,7 +240,15 @@
     };
   }();
 
-  Socket.connect();
+  // Initialize
   Events.bind();
   Output.write('');
+  Socket.connect();
+  Socket.listen('response', function(data) {
+    if(!data.response) {
+      Output.write(data.command + ': command not found');
+    } else {
+      Output.write(data.response);
+    }
+  });
 }());

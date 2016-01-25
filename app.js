@@ -16,8 +16,8 @@ var bodyParser = require('body-parser');
 var http = require('http').Server(app);
 var nunjucks = require('nunjucks');
 var system = require('./utils/system');
-var logger = require("./utils/logger");
-var socket = require("./components/socket");
+var logger = require('./utils/logger');
+var socket = require('./components/socket');
 
 system.guardUID();
 socket.start(http, options);
@@ -35,7 +35,7 @@ nunjucks.configure('views', {
 app.get('/', function(req, res) {
   res.render('index.html', {
     user: {
-      ip: req.connection.remoteAddress
+      ip: (req.ip === '::1' ? 'developer' : req.ip)
     }
   });
 });

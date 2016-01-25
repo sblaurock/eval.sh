@@ -18,12 +18,19 @@ footer {
   position: absolute;
   bottom: 15px;
   right: 17px;
-  color: rgba(39, 41, 45, 1);
   font-size: 80%;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 .text-comment {
-  color: rgba(39, 41, 45, 1);
+  color: rgba(95, 95, 95, 1);
 }
 .text-highlight {
   color: rgba(136, 174, 99, 1);

@@ -1,4 +1,5 @@
-var logger = require("../utils/logger");
+var logger = require('../utils/logger');
+var shell = require('./shell');
 
 var clients = {};
 
@@ -6,14 +7,25 @@ var clients = {};
 var start = function(http, options) {
   var io = require('socket.io')(http, options.socket);
 
+  // Handle connection
   io.on('connection', function(socket) {
     var id = socket.id;
 
-    console.log("Socket client '" + id + "' connected");
+    logger.info("[socket] %s connected", id);
     clients[id] = socket;
 
+    // Process "shell" command
+    socket.on('command', function(command) {
+      logger.info("[socket] %s sent command '%s'", id, command);
+      clients[id] && clients[id].emit('response', {
+        command: command,
+        response: shell.process(command, id)
+      })
+    });
+
+    // Handle disconnenct
     socket.on('disconnect', function(socket) {
-      console.log("Socket client '" + id + "' disconnected");
+      logger.info("[socket] %s disconnected");
       delete clients[id];
     });
   });
