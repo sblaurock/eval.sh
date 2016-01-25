@@ -117,6 +117,12 @@
     var map = {
       'clear': function() {
 	Output.clear();
+      },
+      'help': function() {
+	Socket.send('command', 'cat help');
+      },
+      '?': function() {
+	Socket.send('command', 'cat help');
       }
     };
 
@@ -218,6 +224,15 @@
 
   // Handle "screen"
   var Output = function() {
+    // Format output string
+    var format = function(string) {
+      if(!string || typeof string !== "string") {
+	return '';
+      }
+
+      return string.replace('\n', '<br>');
+    };
+
     return {
       // Clear "screen"
       clear: function() {
@@ -227,6 +242,8 @@
 
       // Write text to "screen"
       write: function(string, command) {
+	string = format(string);
+
 	var date = (new Date()).toLocaleTimeString();
 	var timestamp = (command ? '<div class="' + options.classes.timestamp + ' ' + options.classes.text.comment + '">' + date + '</div>' : '');
 	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + timestamp + '</div>');
@@ -245,7 +262,7 @@
   Output.write('');
   Socket.connect();
   Socket.listen('response', function(data) {
-    if(!data.response) {
+    if(data.response === null) {
       Output.write(data.command + ': command not found');
     } else {
       Output.write(data.response);

@@ -25,7 +25,7 @@ var start = function(http, options) {
 
     // Handle disconnenct
     socket.on('disconnect', function(socket) {
-      logger.info("[socket] %s disconnected");
+      logger.info("[socket] %s disconnected", id);
       delete clients[id];
     });
   });
