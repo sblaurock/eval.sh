@@ -1,12 +1,13 @@
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var watch = require('gulp-watch');
+var print = require('gulp-print');
 var jshint = require('gulp-jshint');
+var csslint = require('gulp-csslint');
+var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var minify = require('gulp-minify-css');
-var csslint = require('gulp-csslint');
-var print = require('gulp-print');
-var concat = require('gulp-concat');
+var header = require('gulp-header');
 
 // Environment and options
 var pkg = require('./package.json');
@@ -15,19 +16,33 @@ var options = {
     'public/**',
     'views/**'
   ],
-  jsFiles: 'public/js/script.js',
-  cssFiles: 'public/css/style.css',
-  cssLintOptions: {
-    'important': false,
-    'vendor-prefix': false,
-    'compatible-vendor-prefixes': false,
-    'box-sizing': false,
-    'fallback-colors': false,
-    'box-model': false,
-    'adjoining-classes': false,
-    'outline-none': false,
-    'font-sizes': false,
-    'bulletproof-font-face': false
+  lint: {
+    css: {
+      files: 'public/css/style.css',
+      options: {
+        'important': false,
+        'vendor-prefix': false,
+        'compatible-vendor-prefixes': false,
+        'box-sizing': false,
+        'fallback-colors': false,
+        'box-model': false,
+        'adjoining-classes': false,
+        'outline-none': false,
+        'font-sizes': false,
+        'bulletproof-font-face': false
+      }
+    },
+    js: {
+      files:'public/js/script.js'
+    }
+  },
+  dir: {
+    js: 'public/js',
+    css: 'public/css'
+  },
+  output: {
+    js: 'script.min.js',
+    css: 'style.min.css'
   },
   banner: [
     '/**',
@@ -44,7 +59,7 @@ var options = {
 
 // Lint JavaScript
 gulp.task('lint-js', function() {
-  return gulp.src(options.jsFiles)
+  return gulp.src(options.lint.js.files)
   .pipe(jshint())
   .pipe(print(function(filepath) {
     return " - " + filepath;
@@ -54,17 +69,62 @@ gulp.task('lint-js', function() {
 
 // Lint CSS
 gulp.task('lint-css', function() {
-    return gulp.src(options.cssFiles)
-        .pipe(csslint(options.cssLintOptions))
-        .pipe(print(function(filepath) {
-            return " - " + filepath;
-        }))
-        .pipe(csslint.reporter());
+    return gulp.src(options.lint.css.files)
+      .pipe(csslint(options.lint.css.options))
+      .pipe(print(function(filepath) {
+        return " - " + filepath;
+      }))
+      .pipe(csslint.reporter());
+});
+
+// Minify & concatenate JS
+gulp.task('scripts', function() {
+    return gulp.src([
+        options.dir.js + '/**/*.js',
+        '!' + options.dir.js + '/**/*.min.js'
+      ])
+      .pipe(print(function(filepath) {
+          return " - " + filepath;
+      }))
+      .pipe(concat(options.output.js))
+      .pipe(gulp.dest(options.dir.js))
+      .pipe(uglify({
+          preserveComments: 'license'
+      }))
+      .pipe(gulp.dest(options.dir.js))
+      .pipe(print(function(filepath) {
+          return "   > " + filepath;
+      }));
+});
+
+// Minify & concatenate CSS
+gulp.task('styles', function() {
+    return gulp.src([
+        options.dir.css + '/**/*.css',
+        '!' + options.dir.css + '/**/*.min.css'
+      ])
+      .pipe(print(function(filepath) {
+          return " - " + filepath;
+      }))
+      .pipe(concat(options.output.css))
+      .pipe(gulp.dest(options.dir.css))
+      .pipe(minify())
+      .pipe(gulp.dest(options.dir.css))
+      .pipe(print(function(filepath) {
+          return "   > " + filepath;
+      }));
+});
+
+// Prepend header
+gulp.task('header', function() {
+    return gulp.src(options.dir.js + '/' + options.output.js)
+      .pipe(header(options.banner, { pkg: pkg }))
+      .pipe(gulp.dest(options.dir.js));
 });
 
 // Build
 gulp.task('build', function(callback) {
-  runSequence('lint-js', 'lint-css', callback);
+  runSequence('lint-js', 'lint-css', 'scripts', 'styles', 'header', callback);
 });
 
 // Watch for changes

@@ -11,6 +11,9 @@
   "author": "sblaurock",
   "license": "ISC",
   "homepage": "https://github.com/sblaurock/evalsh#readme",
+  "scripts": {
+    "start": "gulp build; node app.js"
+  },
   "dependencies": {
     "body-parser": "^1.14.2",
     "express": "^4.13.4",
