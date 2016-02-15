@@ -109,7 +109,7 @@
 
 	return stack[current];
       }
-    }
+    };
   }();
 
   // Handle "shell"
@@ -135,7 +135,7 @@
 	  map[command]();
 	}
       }
-    }
+    };
   }();
 
   // Handle events
