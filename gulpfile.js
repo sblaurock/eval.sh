@@ -6,6 +6,7 @@ var jshint = require('gulp-jshint');
 var csslint = require('gulp-csslint');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
+var postcss = require('gulp-postcss');
 var minify = require('gulp-minify-css');
 var header = require('gulp-header');
 
@@ -18,18 +19,15 @@ var options = {
   ],
   lint: {
     css: {
-      files: 'public/css/style.css',
       options: {
         'important': false,
         'vendor-prefix': false,
         'compatible-vendor-prefixes': false,
         'box-sizing': false,
         'fallback-colors': false,
-        'box-model': false,
         'adjoining-classes': false,
         'outline-none': false,
-        'font-sizes': false,
-        'bulletproof-font-face': false
+        'unqualified-attributes': false
       }
     },
     js: {
@@ -67,16 +65,6 @@ gulp.task('lint-js', function() {
   .pipe(jshint.reporter('default'));
 });
 
-// Lint CSS
-gulp.task('lint-css', function() {
-    return gulp.src(options.lint.css.files)
-      .pipe(csslint(options.lint.css.options))
-      .pipe(print(function(filepath) {
-        return " - " + filepath;
-      }))
-      .pipe(csslint.reporter());
-});
-
 // Minify & concatenate JS
 gulp.task('scripts', function() {
     return gulp.src([
@@ -87,29 +75,10 @@ gulp.task('scripts', function() {
           return " - " + filepath;
       }))
       .pipe(concat(options.output.js))
-      .pipe(gulp.dest(options.dir.js))
       .pipe(uglify({
           preserveComments: 'license'
       }))
       .pipe(gulp.dest(options.dir.js))
-      .pipe(print(function(filepath) {
-          return "   > " + filepath;
-      }));
-});
-
-// Minify & concatenate CSS
-gulp.task('styles', function() {
-    return gulp.src([
-        options.dir.css + '/**/*.css',
-        '!' + options.dir.css + '/**/*.min.css'
-      ])
-      .pipe(print(function(filepath) {
-          return " - " + filepath;
-      }))
-      .pipe(concat(options.output.css))
-      .pipe(gulp.dest(options.dir.css))
-      .pipe(minify())
-      .pipe(gulp.dest(options.dir.css))
       .pipe(print(function(filepath) {
           return "   > " + filepath;
       }));
@@ -122,9 +91,39 @@ gulp.task('header', function() {
       .pipe(gulp.dest(options.dir.js));
 });
 
+// Minify, concatenate and future-proof CSS
+gulp.task('styles', function() {
+    return gulp.src([
+        options.dir.css + '/**/*.css',
+        '!' + options.dir.css + '/**/*.min.css'
+      ])
+      .pipe(print(function(filepath) {
+          return " - " + filepath;
+      }))
+      .pipe(concat(options.output.css))
+      .pipe(postcss([
+        require("postcss-cssnext")()
+      ]))
+      .pipe(minify())
+      .pipe(gulp.dest(options.dir.css))
+      .pipe(print(function(filepath) {
+          return "   > " + filepath;
+      }));
+});
+
+// Lint CSS
+gulp.task('lint-css', function() {
+    return gulp.src(options.dir.css + '/' + options.output.css)
+      .pipe(csslint(options.lint.css.options))
+      .pipe(print(function(filepath) {
+        return " - " + filepath;
+      }))
+      .pipe(csslint.reporter());
+});
+
 // Build
 gulp.task('build', function(callback) {
-  runSequence('lint-js', 'lint-css', 'scripts', 'styles', 'header', callback);
+  runSequence('lint-js', 'scripts', 'header','styles', 'lint-css', callback);
 });
 
 // Watch for changes

@@ -1,3 +1,16 @@
+:root {
+  --background: rgba(18, 18, 18, 1);
+  --textComment: rgba(95, 95, 95, 1);
+  --textHighlight: rgba(136, 174, 99, 1);
+  --textColor: rgba(196, 200, 198, 1);
+  --prompt: '# ';
+  --promptColor: rgba(129, 102, 137, 1);
+  --cursor: '\a0';
+  --blinkTime: 2s;
+  --verticalPadding: 65px;
+  --horizontalPadding: 70px;
+}
+
 @keyframes blink {
   to {
     opacity: 1;
@@ -9,7 +22,7 @@ html, body {
 }
 
 body {
-  background: rgba(18, 18, 18, 1);
+  background: var(--background);
   font-family: monospace;
   font-size: 12px;
 }
@@ -24,46 +37,59 @@ footer {
 a {
   color: inherit;
   text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .text-comment {
-  color: rgba(95, 95, 95, 1);
+  color: var(--textComment);
 }
 .text-highlight {
-  color: rgba(136, 174, 99, 1);
+  color: var(--textHighlight);
 }
 
 .screen {
   position: absolute;
-  top: 65px;
-  left: 70px;
-  color: rgba(196, 200, 198, 1);
+  top: var(--verticalPadding);
+  left: var(--horizontalPadding);
+  color: var(--textColor);
   overflow: hidden;
-  width: calc(100% - 140px);
-  height: calc(100% - 130px);
+  width: calc(100% - (var(--horizontalPadding) * 2));
+  height: calc(100% - (var(--verticalPadding) * 2));
   line-height: 18px;
 }
 
-.input, .line {
+.input {
   word-wrap: break-word;
   width: 100%;
+
+  &:before {
+    content: var(--prompt);
+    color: var(--promptColor);
+  }
+
+  &:after {
+    content: var(--cursor);
+    background: var(--textColor);
+    opacity: 0;
+    animation: blink var(--blinkTime) steps(2, start) infinite reverse;
+  }
+
+  &.active:after {
+    opacity: 1 !important;
+  }
 }
 
-.input:before, .command:before {
-  content: '# ';
-  color: rgba(129, 102, 137, 1);
+.command:before {
+  content: var(--prompt);
+  color: var(--promptColor);
 }
-.input:after {
-  content: '\a0';
-  background: rgba(196, 200, 198, 1);
-  opacity: 0;
-  animation: blink 2s steps(2, start) infinite reverse;
-}
-.input.active:after {
-  opacity: 1 !important;
+
+.line {
+  word-wrap: break-word;
+  width: 100%;
 }
 
 .timestamp {
