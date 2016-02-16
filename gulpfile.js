@@ -9,6 +9,7 @@ var uglify = require('gulp-uglify');
 var postcss = require('gulp-postcss');
 var minify = require('gulp-minify-css');
 var header = require('gulp-header');
+var babel = require("gulp-babel");
 
 // Environment and options
 var pkg = require('./package.json');
@@ -31,6 +32,9 @@ var options = {
       }
     },
     js: {
+      options: {
+        esversion: 6
+      },
       files:'public/js/script.js'
     }
   },
@@ -58,14 +62,14 @@ var options = {
 // Lint JavaScript
 gulp.task('lint-js', function() {
   return gulp.src(options.lint.js.files)
-  .pipe(jshint())
+  .pipe(jshint(options.lint.js.options))
   .pipe(print(function(filepath) {
     return " - " + filepath;
   }))
   .pipe(jshint.reporter('default'));
 });
 
-// Minify & concatenate JS
+// Minify, concatenate and future-proof JS
 gulp.task('scripts', function() {
     return gulp.src([
         options.dir.js + '/**/*.js',
@@ -75,6 +79,7 @@ gulp.task('scripts', function() {
           return " - " + filepath;
       }))
       .pipe(concat(options.output.js))
+      .pipe(babel())
       .pipe(uglify({
           preserveComments: 'license'
       }))
