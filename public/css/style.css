@@ -1,10 +1,10 @@
 :root {
-  --background: rgba(18, 18, 18, 1);
-  --textComment: rgba(95, 95, 95, 1);
-  --textHighlight: rgba(136, 174, 99, 1);
-  --textColor: rgba(196, 200, 198, 1);
+  --background: rgba(28, 28, 28, 1);
+  --textComment: rgba(67, 67, 69, 1);
+  --textHighlight: rgba(174, 135, 136, 1);
+  --textColor: rgba(215, 214, 177, 1);
   --prompt: '# ';
-  --promptColor: rgba(129, 102, 137, 1);
+  --promptColor: rgba(174, 135, 98, 1);
   --cursor: '\a0';
   --blinkTime: 2s;
   --verticalPadding: 65px;

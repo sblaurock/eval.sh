@@ -53,9 +53,9 @@
 	string = format(string);
 
 	let date = (new Date()).toLocaleTimeString();
-	let timestamp = (command ? '<div class="' + OPTIONS.classes.timestamp + ' ' + OPTIONS.classes.text.comment + '">' + date + '</div>' : '');
-	let contents = $('<div class="' + OPTIONS.classes.line + (command ? ' ' + OPTIONS.classes.command : '') + '">' + string + timestamp + '</div>');
-	let input = $('<div class="' + OPTIONS.classes.input + '"></div>');
+	let timestamp = (command ? `<div class="${OPTIONS.classes.timestamp} ${OPTIONS.classes.text.comment$}">${date}</div>` : '');
+	let contents = $(`<div class="${OPTIONS.classes.line} ${command ? ' ' + OPTIONS.classes.command : ''}">${string} ${timestamp}</div>`);
+	let input = $(`<div class="${OPTIONS.classes.input}"></div>`);
 
 	$('.' + OPTIONS.classes.input).remove();
 	elements.screen.append(contents);
@@ -158,6 +158,11 @@
       },
       '?': () => {
 	Socket.send('command', 'cat help');
+      },
+      'whoami': () => {
+	if(window.app && window.app.user) {
+	  Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
+	}
       }
     };
 
@@ -197,7 +202,7 @@
 	  let input = $('.' + OPTIONS.classes.input);
 	  let command = input.text();
 	  let commandCharCount = command.length;
-	  let contents = $('<span class="' + OPTIONS.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
+	  let contents = $(`<span class="${OPTIONS.classes.character}">${String.fromCharCode(charCode)}</span>`);
 
 	  // Debounce typing animation pause
 	  clearTimeout(typing);
@@ -210,7 +215,7 @@
 
 	  // Enter - submit command
 	  if(charCode === 13) {
-	    Output.write('<span class="' + OPTIONS.classes.text.highlight + '">' + command + '</span>', true);
+	    Output.write(`<span class="${OPTIONS.classes.text.highlight}">${command}</span>`, true);
 
 	    if(commandCharCount) {
 	      Shell.process(command);
@@ -222,7 +227,7 @@
 
 	  // Ctrl-c - submit empty command
 	  if(e.ctrlKey && charCode === 3) {
-	    Output.write('<span class="' + OPTIONS.classes.text.highlight + '">' + command + '</span>', true);
+	    Output.write(`<span class="${OPTIONS.classes.text.highlight}">${command}</span>`, true);
 	  }
 	});
 
@@ -263,7 +268,7 @@
   Socket.connect();
   Socket.listen('response', (data) => {
     if(data.response === null) {
-      Output.write(data.command + ': command not found');
+      Output.write(`${data.command}: command not found`);
     } else {
       Output.write(data.response);
     }

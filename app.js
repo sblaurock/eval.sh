@@ -18,6 +18,7 @@ var nunjucks = require('nunjucks');
 var system = require('./utils/system');
 var logger = require('./utils/logger');
 var socket = require('./components/socket');
+var geoip = require('geoip-lite');
 
 system.guardUID();
 socket.start(http, options);
@@ -33,9 +34,15 @@ nunjucks.configure('views', {
 });
 
 app.get('/', function(req, res) {
+  var ip = (req.ip === '::1' ? null : req.ip);
+  var name = (req.ip === '::1' ? 'developer' : 'guest');
+  var geo = (ip ? geoip.lookup(ip) : null);
+
   res.render('index.html', {
     user: {
-      ip: (req.ip === '::1' ? 'developer' : req.ip)
+      ip: (req.ip === '::1' ? 'localhost' : req.ip),
+      name: 'user',
+      location: geo && geo.region + ' ' + geo.country
     }
   });
 });
