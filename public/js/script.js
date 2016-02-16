@@ -1,5 +1,5 @@
-(function() {
-  var options = {
+(() => {
+  const OPTIONS = {
     debug: false,
     classes: {
       input: 'input',
@@ -15,51 +15,86 @@
     }
   };
 
-  var elements = {
+  let elements = {
     document: $(document),
     screen: $('.screen')
   };
 
   // Log to console
-  var Log = {
+  let Log = {
     // Write log entry
-    write: function(string) {
-      if(options.debug) {
+    write: (string) => {
+      if(OPTIONS.debug) {
 	console.log(string);
       }
     }
   };
 
+  // Handle "screen"
+  let Output = (() => {
+    // Format output string
+    let format = (string = null) => {
+      if(!string || typeof string !== "string") {
+	return '';
+      }
+
+      return string.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+    };
+
+    return {
+      // Clear "screen"
+      clear: () => {
+	elements.screen.html('');
+	Output.write('');
+      },
+
+      // Write text to "screen"
+      write: (string, command) => {
+	string = format(string);
+
+	let date = (new Date()).toLocaleTimeString();
+	let timestamp = (command ? '<div class="' + OPTIONS.classes.timestamp + ' ' + OPTIONS.classes.text.comment + '">' + date + '</div>' : '');
+	let contents = $('<div class="' + OPTIONS.classes.line + (command ? ' ' + OPTIONS.classes.command : '') + '">' + string + timestamp + '</div>');
+	let input = $('<div class="' + OPTIONS.classes.input + '"></div>');
+
+	$('.' + OPTIONS.classes.input).remove();
+	elements.screen.append(contents);
+	elements.screen.append(input);
+	elements.screen.scrollTop(elements.screen[0].scrollHeight);
+      }
+    };
+  })();
+
   // Handle socket related events
-  var Socket = function() {
-    var reference;
+  let Socket = (() => {
+    let reference;
 
     return {
       // Connect to socket server
-      connect: function() {
+      connect: () => {
 	reference = io(window.location.origin);
 
-	reference.on('connect_error', function() {
+	reference.on('connect_error', () => {
 	  Log.write('Socket server could not be contacted');
 	});
 
-	reference.on('connect', function() {
+	reference.on('connect', () => {
 	  Log.write('Connected to socket server');
 	});
 
-	reference.on('disconnect', function() {
+	reference.on('disconnect', () => {
 	  Log.write('Disconnected from socket server');
 	});
       },
 
       // Send an event to socket server
-      send: function(type, data) {
+      send: (type, data) => {
 	reference.emit(type, data);
       },
 
       // Listen for event from socket server
-      listen: function(type, callback) {
-	reference.on(type, function(data) {
+      listen: (type, callback) => {
+	reference.on(type, (data) => {
 	  if(typeof callback === "function") {
 	    callback(data);
 	  }
@@ -67,31 +102,31 @@
       },
 
       // Return a reference to socket session
-      get: function() {
+      get: () => {
 	return reference;
       }
     };
-  }();
+  })();
 
   // Command stack
-  var Stack = function() {
-    var stack = [];
-    var current = null;
+  let Stack = (() => {
+    let stack = [];
+    let current = null;
 
     return {
       // Push a command to stack
-      push: function(string) {
+      push: (string = null) => {
 	current++;
 	stack.push(string);
       },
 
       // Reset current stack value
-      reset: function() {
+      reset: () => {
 	current = stack.length;
       },
 
       // Get previous stack value
-      prev: function() {
+      prev: () => {
 	if(current === null) {
 	  current = stack.length - 1;
 	} else if(current) {
@@ -102,7 +137,7 @@
       },
 
       // Get next stack value
-      next: function() {
+      next: () => {
 	if(current < stack.length) {
 	  current++;
 	}
@@ -110,25 +145,25 @@
 	return stack[current];
       }
     };
-  }();
+  })();
 
   // Handle "shell"
-  var Shell = function() {
-    var map = {
-      'clear': function() {
+  let Shell = (() => {
+    let map = {
+      'clear': () => {
 	Output.clear();
       },
-      'help': function() {
+      'help': () => {
 	Socket.send('command', 'cat help');
       },
-      '?': function() {
+      '?': () => {
 	Socket.send('command', 'cat help');
       }
     };
 
     return {
       // Process command
-      process: function(command) {
+      process: (command) => {
 	if(!map[command]) {
 	  Socket.send('command', command);
 	} else {
@@ -136,19 +171,19 @@
 	}
       }
     };
-  }();
+  })();
 
   // Handle events
-  var Events = function() {
-    var typing = null;
-    var typingBuffer = 500;
-    var lineHeight = 36;
+  let Events = (() => {
+    let typing = null;
+    let typingBuffer = 500;
+    let lineHeight = 36;
 
     return {
       // Bind events
-      bind: function() {
+      bind: () => {
 	// Listen for screen scroll
-	elements.screen.bind('mousewheel', function(e) {
+	elements.screen.bind('mousewheel', (e) => {
 	  if(e.originalEvent.wheelDelta / 120 > 0) {
 	    elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
 	  } else {
@@ -157,25 +192,25 @@
 	});
 
 	// Listen for keypress, write to input
-	elements.document.keypress(function(e) {
-	  var charCode = e.which;
-	  var input = $('.' + options.classes.input);
-	  var command = input.text();
-	  var commandCharCount = command.length;
-	  var contents = $('<span class="' + options.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
+	elements.document.keypress((e) => {
+	  let charCode = e.which;
+	  let input = $('.' + OPTIONS.classes.input);
+	  let command = input.text();
+	  let commandCharCount = command.length;
+	  let contents = $('<span class="' + OPTIONS.classes.character + '">' + String.fromCharCode(charCode) + '</span>');
 
 	  // Debounce typing animation pause
 	  clearTimeout(typing);
-	  typing = setTimeout(function() {
-	    input.removeClass(options.classes.active);
+	  typing = setTimeout(() => {
+	    input.removeClass(OPTIONS.classes.active);
 	  }, typingBuffer);
 
-	  input.addClass(options.classes.active);
+	  input.addClass(OPTIONS.classes.active);
 	  input.append(contents);
 
 	  // Enter - submit command
 	  if(charCode === 13) {
-	    Output.write('<span class="' + options.classes.text.highlight + '">' + command + '</span>', true);
+	    Output.write('<span class="' + OPTIONS.classes.text.highlight + '">' + command + '</span>', true);
 
 	    if(commandCharCount) {
 	      Shell.process(command);
@@ -187,22 +222,22 @@
 
 	  // Ctrl-c - submit empty command
 	  if(e.ctrlKey && charCode === 3) {
-	    Output.write('<span class="' + options.classes.text.highlight + '">' + command + '</span>', true);
+	    Output.write('<span class="' + OPTIONS.classes.text.highlight + '">' + command + '</span>', true);
 	  }
 	});
 
-	elements.document.keydown(function(e) {
-	  var nodeName = e.target.nodeName.toLowerCase();
-	  var charCode = e.which;
+	elements.document.keydown((e) => {
+	  let nodeName = e.target.nodeName.toLowerCase();
+	  let charCode = e.which;
 
 	  // Up - recall command
 	  if(e.which === 38) {
-	    $('.' + options.classes.input).html(Stack.prev());
+	    $('.' + OPTIONS.classes.input).html(Stack.prev());
 	  }
 
 	  // Down - recall command
 	  if(e.which === 40) {
-	    $('.' + options.classes.input).html(Stack.next());
+	    $('.' + OPTIONS.classes.input).html(Stack.next());
 	  }
 
 	  // Tab and backspace - prevent default actions
@@ -211,7 +246,7 @@
 	    } else {
 	      // Backspace
 	      if(e.which === 8) {
-		$('.' + options.classes.character).last().remove();
+		$('.' + OPTIONS.classes.character).last().remove();
 	      }
 
 	      e.preventDefault();
@@ -220,52 +255,17 @@
 	});
       }
     };
-  }();
-
-  // Handle "screen"
-  var Output = function() {
-    // Format output string
-    var format = function(string) {
-      if(!string || typeof string !== "string") {
-	return '';
-      }
-
-      return string.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
-    };
-
-    return {
-      // Clear "screen"
-      clear: function() {
-	elements.screen.html('');
-	Output.write('');
-      },
-
-      // Write text to "screen"
-      write: function(string, command) {
-	string = format(string);
-
-	var date = (new Date()).toLocaleTimeString();
-	var timestamp = (command ? '<div class="' + options.classes.timestamp + ' ' + options.classes.text.comment + '">' + date + '</div>' : '');
-	var contents = $('<div class="' + options.classes.line + (command ? ' ' + options.classes.command : '') + '">' + string + timestamp + '</div>');
-	var input = $('<div class="' + options.classes.input + '"></div>');
-
-	$('.' + options.classes.input).remove();
-	elements.screen.append(contents);
-	elements.screen.append(input);
-	elements.screen.scrollTop(elements.screen[0].scrollHeight);
-      }
-    };
-  }();
+  })();
 
   // Initialize
   Events.bind();
   Output.write('Type "help" to get started');
   Socket.connect();
-  Socket.listen('response', function(data) {
+  Socket.listen('response', (data) => {
     if(data.response === null) {
       Output.write(data.command + ': command not found');
     } else {
       Output.write(data.response);
     }
   });
-}());
+})();
