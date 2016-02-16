@@ -237,12 +237,20 @@
 
 	  // Up - recall command
 	  if(e.which === 38) {
-	    $('.' + OPTIONS.classes.input).html(Stack.prev());
+	    let prevCommand = Stack.prev().split('').join(`</span><span class="${OPTIONS.classes.character}">`);
+
+	    if(prevCommand) {
+	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${prevCommand}</span>`);
+	    }
 	  }
 
 	  // Down - recall command
 	  if(e.which === 40) {
-	    $('.' + OPTIONS.classes.input).html(Stack.next());
+	    let nextCommand = Stack.next().split('').join(`</span><span class="${OPTIONS.classes.character}">`);
+
+	    if(nextCommand) {
+	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${nextCommand}</span>`);
+	    }
 	  }
 
 	  // Tab and backspace - prevent default actions

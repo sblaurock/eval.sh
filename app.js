@@ -34,13 +34,13 @@ nunjucks.configure('views', {
 });
 
 app.get('/', function(req, res) {
-  var ip = (req.ip === '::1' ? null : req.ip);
+  var ipv4 = req.ip.replace(/[^0-9.]/g, '');
   var name = (req.ip === '::1' ? 'developer' : 'guest');
-  var geo = (ip ? geoip.lookup(ip) : null);
+  var geo = (ipv4 ? geoip.lookup(ipv4) : null);
 
   res.render('index.html', {
     user: {
-      ip: (req.ip === '::1' ? 'localhost' : req.ip),
+      ip: (req.ip === '::1' ? 'localhost' : ipv4),
       name: 'user',
       location: geo && geo.region + ' ' + geo.country
     }
