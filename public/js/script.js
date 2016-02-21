@@ -115,7 +115,7 @@
 
     return {
       // Push a command to stack
-      push: (string = null) => {
+      push (string = null) {
 	current++;
 	stack.push(string);
       },
@@ -202,7 +202,8 @@
 	  let input = $('.' + OPTIONS.classes.input);
 	  let command = input.text();
 	  let commandCharCount = command.length;
-	  let contents = $(`<span class="${OPTIONS.classes.character}">${String.fromCharCode(charCode)}</span>`);
+	  let character = (charCode === 32 ? '&nbsp;' : String.fromCharCode(charCode));
+	  let contents = $(`<span class="${OPTIONS.classes.character}">${character}</span>`);
 
 	  // Debounce typing animation pause
 	  clearTimeout(typing);
@@ -235,21 +236,20 @@
 	  let nodeName = e.target.nodeName.toLowerCase();
 	  let charCode = e.which;
 
-	  // Up - recall command
-	  if(e.which === 38) {
-	    let prevCommand = Stack.prev().split('').join(`</span><span class="${OPTIONS.classes.character}">`);
+	  // Up and down - recall command from history
+	  if(e.which === 38 || e.which === 40) {
+	    let command = '';
 
-	    if(prevCommand) {
-	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${prevCommand}</span>`);
+	    if(e.which === 38) {
+	      command = Stack.prev();
+	    } else if(e.which === 40) {
+	      command = Stack.next();
 	    }
-	  }
 
-	  // Down - recall command
-	  if(e.which === 40) {
-	    let nextCommand = Stack.next().split('').join(`</span><span class="${OPTIONS.classes.character}">`);
+	    if(command) {
+	      let formatted = command.split('').join(`</span><span class="${OPTIONS.classes.character}">`);
 
-	    if(nextCommand) {
-	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${nextCommand}</span>`);
+	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${formatted}</span>`);
 	    }
 	  }
 

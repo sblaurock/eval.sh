@@ -19,11 +19,13 @@ var system = require('./utils/system');
 var logger = require('./utils/logger');
 var socket = require('./components/socket');
 var geoip = require('geoip-lite');
+var requestIp = require('request-ip');
 
 system.guardUID();
 socket.start(http, options);
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
+app.use(requestIp.mw())
 app.set('port', (process.env.PORT || options.port));
 
 // Setup Nunjucks
@@ -34,7 +36,7 @@ nunjucks.configure('views', {
 });
 
 app.get('/', function(req, res) {
-  var ipv4 = req.ip.replace(/[^0-9.]/g, '');
+  var ipv4 = req.clientIp;
   var name = (req.ip === '::1' ? 'developer' : 'guest');
   var geo = (ipv4 ? geoip.lookup(ipv4) : null);
 
