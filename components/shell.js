@@ -39,6 +39,16 @@ var map = {
     } catch (e) {
       return file + ': No such file or directory';
     }
+  },
+  'echo': function(data) {
+    var string = data.args && data.args[0];
+
+    // Ensure a string was passed as an argument
+    if(!string) {
+      return '\n';
+    }
+
+    return string.replace(/["'\\]/g, '').replace('<', '&lt;').replace('>', '&gt;');
   }
 };
 

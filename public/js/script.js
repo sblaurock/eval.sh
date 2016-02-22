@@ -1,6 +1,7 @@
 (() => {
   const OPTIONS = {
     debug: false,
+    space: '&nbsp;',
     classes: {
       input: 'input',
       line: 'line',
@@ -38,7 +39,7 @@
 	return '';
       }
 
-      return string.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+      return string.replace(/\n/g, '<br>').replace(/\t/g, OPTIONS.space + OPTIONS.space + OPTIONS.space + OPTIONS.space);
     };
 
     return {
@@ -53,7 +54,7 @@
 	string = format(string);
 
 	let date = (new Date()).toLocaleTimeString();
-	let timestamp = (command ? `<div class="${OPTIONS.classes.timestamp} ${OPTIONS.classes.text.comment$}">${date}</div>` : '');
+	let timestamp = (command ? `<div class="${OPTIONS.classes.timestamp} ${OPTIONS.classes.text.comment}">${date}</div>` : '');
 	let contents = $(`<div class="${OPTIONS.classes.line} ${command ? ' ' + OPTIONS.classes.command : ''}">${string} ${timestamp}</div>`);
 	let input = $(`<div class="${OPTIONS.classes.input}"></div>`);
 
@@ -200,9 +201,9 @@
 	elements.document.keypress((e) => {
 	  let charCode = e.which;
 	  let input = $('.' + OPTIONS.classes.input);
-	  let command = input.text();
+	  let command = input.text().replace(/\s/g, ' ');
 	  let commandCharCount = command.length;
-	  let character = (charCode === 32 ? '&nbsp;' : String.fromCharCode(charCode));
+	  let character = (charCode === 32 ? OPTIONS.space : String.fromCharCode(charCode));
 	  let contents = $(`<span class="${OPTIONS.classes.character}">${character}</span>`);
 
 	  // Debounce typing animation pause
