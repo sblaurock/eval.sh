@@ -1,5 +1,5 @@
-(() => {
-  const OPTIONS = {
+(($, io) => {
+  const options = {
     debug: false,
     space: '&nbsp;',
     classes: {
@@ -10,263 +10,268 @@
       active: 'active',
       timestamp: 'timestamp',
       text: {
-	comment: 'text-comment',
-	highlight: 'text-highlight'
+        comment: 'text-comment',
+        highlight: 'text-highlight'
       }
     }
   };
 
-  let elements = {
+  const elements = {
     document: $(document),
     screen: $('.screen')
   };
 
   // Log to console
-  let Log = {
+  const Log = {
     // Write log entry
     write: (string) => {
-      if(OPTIONS.debug) {
-	console.log(string);
+      if (options.debug) {
+        console.log(string);
       }
     }
   };
 
   // Handle "screen"
-  let Output = (() => {
+  const Output = (() => {
     // Format output string
-    let format = (string = null) => {
-      if(!string || typeof string !== "string") {
-	return '';
+    const format = (string = null) => {
+      if (!string || typeof string !== 'string') {
+        return '';
       }
 
-      return string.replace(/\n/g, '<br>').replace(/\t/g, OPTIONS.space + OPTIONS.space + OPTIONS.space + OPTIONS.space);
+      return string.replace(/\n/g, '<br>').replace(/\t/g, options.space.repeat(4));
     };
 
     return {
       // Clear "screen"
       clear: () => {
-	elements.screen.html('');
-	Output.write('');
+        elements.screen.html('');
+        Output.write('');
       },
 
       // Write text to "screen"
       write: (string, command) => {
-	string = format(string);
+        const formatted = format(string);
+        const date = (new Date()).toLocaleTimeString();
+        const timestamp = (command ? `<div class="${options.classes.timestamp} ${options.classes.text.comment}">${date}</div>` : '');
+        const contents = $(`<div class="${options.classes.line} ${command ? ` ${options.classes.command} ` : ''}">${formatted} ${timestamp}</div>`);
+        const input = $(`<div class="${options.classes.input}"></div>`);
 
-	let date = (new Date()).toLocaleTimeString();
-	let timestamp = (command ? `<div class="${OPTIONS.classes.timestamp} ${OPTIONS.classes.text.comment}">${date}</div>` : '');
-	let contents = $(`<div class="${OPTIONS.classes.line} ${command ? ' ' + OPTIONS.classes.command : ''}">${string} ${timestamp}</div>`);
-	let input = $(`<div class="${OPTIONS.classes.input}"></div>`);
-
-	$('.' + OPTIONS.classes.input).remove();
-	elements.screen.append(contents);
-	elements.screen.append(input);
-	elements.screen.scrollTop(elements.screen[0].scrollHeight);
+        $(`.${options.classes.input}`).remove();
+        elements.screen.append(contents);
+        elements.screen.append(input);
+        elements.screen.scrollTop(elements.screen[0].scrollHeight);
       }
     };
   })();
 
   // Handle socket related events
-  let Socket = (() => {
+  const Socket = (() => {
     let reference;
 
     return {
       // Connect to socket server
-      connect: () => {
-	reference = io(window.location.origin);
+      connect() {
+        reference = io(window.location.origin);
 
-	reference.on('connect_error', () => {
-	  Log.write('Socket server could not be contacted');
-	});
+        reference.on('connect_error', () => {
+          Log.write('Socket server could not be contacted');
+        });
 
-	reference.on('connect', () => {
-	  Log.write('Connected to socket server');
-	});
+        reference.on('connect', () => {
+          Log.write('Connected to socket server');
+        });
 
-	reference.on('disconnect', () => {
-	  Log.write('Disconnected from socket server');
-	});
+        reference.on('disconnect', () => {
+          Log.write('Disconnected from socket server');
+        });
       },
 
       // Send an event to socket server
-      send: (type, data) => {
-	reference.emit(type, data);
+      send(type, data) {
+        reference.emit(type, data);
       },
 
       // Listen for event from socket server
       listen: (type, callback) => {
-	reference.on(type, (data) => {
-	  if(typeof callback === "function") {
-	    callback(data);
-	  }
-	});
+        reference.on(type, (data) => {
+          if (typeof callback === 'function') {
+            callback(data);
+          }
+        });
       },
 
       // Return a reference to socket session
-      get: () => {
-	return reference;
+      get() {
+        return reference;
       }
     };
   })();
 
   // Command stack
-  let Stack = (() => {
-    let stack = [];
+  const Stack = (() => {
+    const stack = [];
     let current = null;
 
     return {
       // Push a command to stack
-      push (string = null) {
-	current++;
-	stack.push(string);
+      push(string = null) {
+        current++;
+        stack.push(string);
       },
 
       // Reset current stack value
       reset: () => {
-	current = stack.length;
+        current = stack.length;
       },
 
       // Get previous stack value
       prev: () => {
-	if(current === null) {
-	  current = stack.length - 1;
-	} else if(current) {
-	  current--;
-	}
+        if (current === null) {
+          current = stack.length - 1;
+        } else if (current) {
+          current--;
+        }
 
-	return stack[current];
+        return stack[current];
       },
 
       // Get next stack value
       next: () => {
-	if(current < stack.length) {
-	  current++;
-	}
+        if (current < stack.length) {
+          current++;
+        }
 
-	return stack[current];
+        return stack[current];
       }
     };
   })();
 
   // Handle "shell"
-  let Shell = (() => {
-    let map = {
-      'clear': () => {
-	Output.clear();
+  const Shell = (() => {
+    const map = {
+      // Clear "screen"
+      clear() {
+        Output.clear();
       },
-      'help': () => {
-	Socket.send('command', 'cat help');
+
+      // Retrieve contents of "help" file
+      help() {
+        Socket.send('command', 'cat help');
       },
-      '?': () => {
-	Socket.send('command', 'cat help');
+
+      // Retrieve contents of "help" file
+      '?'() {
+        Socket.send('command', 'cat help');
       },
-      'whoami': () => {
-	if(window.app && window.app.user) {
-	  Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
-	}
+
+      // Print user information to "screen"
+      whoami() {
+        if (window.app && window.app.user) {
+          Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
+        }
       }
     };
 
     return {
       // Process command
       process: (command) => {
-	if(!map[command]) {
-	  Socket.send('command', command);
-	} else {
-	  map[command]();
-	}
+        if (!map[command]) {
+          Socket.send('command', command);
+        } else {
+          map[command]();
+        }
       }
     };
   })();
 
   // Handle events
-  let Events = (() => {
+  const Events = (() => {
     let typing = null;
-    let typingBuffer = 500;
-    let lineHeight = 36;
+    const typingBuffer = 500;
+    const lineHeight = 36;
 
     return {
       // Bind events
       bind: () => {
-	// Listen for screen scroll
-	elements.screen.bind('mousewheel', (e) => {
-	  if(e.originalEvent.wheelDelta / 120 > 0) {
-	    elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
-	  } else {
-	    elements.screen.scrollTop(elements.screen.scrollTop() + lineHeight);
-	  }
-	});
+        // Listen for screen scroll
+        elements.screen.bind('mousewheel', (e) => {
+          if (e.originalEvent.wheelDelta / 120 > 0) {
+            elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
+          } else {
+            elements.screen.scrollTop(elements.screen.scrollTop() + lineHeight);
+          }
+        });
 
-	// Listen for keypress, write to input
-	elements.document.keypress((e) => {
-	  let charCode = e.which;
-	  let input = $('.' + OPTIONS.classes.input);
-	  let command = input.text().replace(/\s/g, ' ');
-	  let commandCharCount = command.length;
-	  let character = (charCode === 32 ? OPTIONS.space : String.fromCharCode(charCode));
-	  let contents = $(`<span class="${OPTIONS.classes.character}">${character}</span>`);
+        // Listen for keypress, write to input
+        elements.document.keypress((e) => {
+          const charCode = e.which;
+          const input = $(`.${options.classes.input}`);
+          const command = input.text().replace(/\s/g, ' ');
+          const commandCharCount = command.length;
+          const character = (charCode === 32 ? options.space : String.fromCharCode(charCode));
+          const contents = $(`<span class="${options.classes.character}">${character}</span>`);
 
-	  // Debounce typing animation pause
-	  clearTimeout(typing);
-	  typing = setTimeout(() => {
-	    input.removeClass(OPTIONS.classes.active);
-	  }, typingBuffer);
+          // Debounce typing animation pause
+          clearTimeout(typing);
+          typing = setTimeout(() => {
+            input.removeClass(options.classes.active);
+          }, typingBuffer);
 
-	  input.addClass(OPTIONS.classes.active);
-	  input.append(contents);
+          input.addClass(options.classes.active);
+          input.append(contents);
 
-	  // Enter - submit command
-	  if(charCode === 13) {
-	    Output.write(`<span class="${OPTIONS.classes.text.highlight}">${command}</span>`, true);
+          // Enter - submit command
+          if (charCode === 13) {
+            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true);
 
-	    if(commandCharCount) {
-	      Shell.process(command);
-	    }
+            if (commandCharCount) {
+              Shell.process(command);
+            }
 
-	    Stack.push(command);
-	    Stack.reset();
-	  }
+            Stack.push(command);
+            Stack.reset();
+          }
 
-	  // Ctrl-c - submit empty command
-	  if(e.ctrlKey && charCode === 3) {
-	    Output.write(`<span class="${OPTIONS.classes.text.highlight}">${command}</span>`, true);
-	  }
-	});
+          // Ctrl-c - submit empty command
+          if (e.ctrlKey && charCode === 3) {
+            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true);
+          }
+        });
 
-	elements.document.keydown((e) => {
-	  let nodeName = e.target.nodeName.toLowerCase();
-	  let charCode = e.which;
+        elements.document.keydown((e) => {
+          const nodeName = e.target.nodeName.toLowerCase();
+          const charCode = e.which;
 
-	  // Up and down - recall command from history
-	  if(e.which === 38 || e.which === 40) {
-	    let command = '';
+          // Up and down - recall command from history
+          if (charCode === 38 || charCode === 40) {
+            let command = '';
 
-	    if(e.which === 38) {
-	      command = Stack.prev();
-	    } else if(e.which === 40) {
-	      command = Stack.next();
-	    }
+            if (charCode === 38) {
+              command = Stack.prev();
+            } else if (charCode === 40) {
+              command = Stack.next();
+            }
 
-	    if(command) {
-	      let formatted = command.split('').join(`</span><span class="${OPTIONS.classes.character}">`);
+            if (command) {
+              const formatted = command.split('').join(`</span><span class="${options.classes.character}">`);
 
-	      $('.' + OPTIONS.classes.input).html(`<span class="${OPTIONS.classes.character}">${formatted}</span>`);
-	    }
-	  }
+              $(`.${options.classes.input}`).html(`<span class="${options.classes.character}">${formatted}</span>`);
+            }
+          }
 
-	  // Tab and backspace - prevent default actions
-	  if(e.which === 8 || e.which === 9) {
-	    if((nodeName === 'input' && e.target.type === 'text') || nodeName === 'textarea') {
-	    } else {
-	      // Backspace
-	      if(e.which === 8) {
-		$('.' + OPTIONS.classes.character).last().remove();
-	      }
+          // Tab and backspace - prevent default actions
+          if (e.which === 8 || e.which === 9) {
+            if (!(nodeName === 'input' && e.target.type === 'text') && nodeName !== 'textarea') {
+              // Backspace
+              if (e.which === 8) {
+                $(`.${options.classes.character}`).last().remove();
+              }
 
-	      e.preventDefault();
-	    }
-	  }
-	});
+              e.preventDefault();
+            }
+          }
+        });
       }
     };
   })();
@@ -276,10 +281,10 @@
   Output.write('Type "help" to get started');
   Socket.connect();
   Socket.listen('response', (data) => {
-    if(data.response === null) {
+    if (data.response === null) {
       Output.write(`${data.command}: command not found`);
     } else {
       Output.write(data.response);
     }
   });
-})();
+})(window.jQuery, window.io);
