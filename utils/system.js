@@ -1,12 +1,8 @@
 // Prevent running application as root
-var guardUID = function() {
-  var uid = parseInt(process.env.SUDO_UID);
+export function guardUID() {
+  const uid = parseInt(process.env.SUDO_UID, 10);
 
-  if(uid) {
+  if (uid) {
     process.setuid(uid);
   }
-};
-
-module.exports = {
-  guardUID: guardUID
-};
+}

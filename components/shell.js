@@ -1,50 +1,54 @@
-var logger = require('../utils/logger');
-var fs = require('fs');
+import fs from 'fs';
 
-var options = {
+const options = {
   filesystem: './files'
 };
 
 // Prevent exploits
-var sanitize = function(string) {
+const sanitize = (string) => {
   // Poision null byte
-  if(string.indexOf('\0') !== -1) {
+  if (string.indexOf('\0') !== -1) {
     return '';
   }
 
   // Force alphanumerics
-  return string.replace(/\W+/g, " ");
+  return string.replace(/\W+/g, ' ');
 };
 
 // Commands
-var map = {
-  'ls': function() {
+const map = {
+  // List contents of directory
+  ls() {
     return fs.readdirSync(options.filesystem).join('\t');
   },
-  'cat': function(data) {
-    var file = data.args && data.args[0];
+
+  // Print contents of file
+  cat(data) {
+    const file = data.args && data.args[0];
 
     // Ensure a file was passed as an argument
-    if(!file) {
+    if (!file) {
       return '';
     }
 
-    file = sanitize(file);
+    const sanitized = sanitize(file);
 
     // Ensure file exists
     try {
-      fs.statSync(options.filesystem + '/' + file);
+      fs.statSync(`${options.filesystem}/${sanitized}`);
 
-      return fs.readFileSync(options.filesystem + '/' + file, 'utf8');
+      return fs.readFileSync(`${options.filesystem}/${sanitized}`, 'utf8');
     } catch (e) {
-      return file + ': No such file or directory';
+      return `${sanitized}: No such file or directory`;
     }
   },
-  'echo': function(data) {
-    var string = data.args && data.args[0];
+
+  // Print a string
+  echo(data) {
+    const string = data.args && data.args[0];
 
     // Ensure a string was passed as an argument
-    if(!string) {
+    if (!string) {
       return '\n';
     }
 
@@ -53,23 +57,17 @@ var map = {
 };
 
 // Process "shell" command
-var process = function(command, id) {
-  var pieces = command.split(' ');
-  var args = [];
+export function process(input, id) {
+  const pieces = input.split(' ');
+  const command = pieces[0];
+  const args = pieces.slice(1);
 
-  command = pieces[0];
-  args = pieces.slice(1);
-
-  if(map[command]) {
+  if (map[command]) {
     return map[command]({
-      id: id,
-      args: args
+      id,
+      args
     });
-  } else {
-    return null;
   }
-};
 
-module.exports = {
-  process: process
-};
+  return null;
+}

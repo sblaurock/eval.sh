@@ -1,7 +1,7 @@
-var winston = require('winston');
+import winston from 'winston';
 
 // Define logger configuration
-var logger = new winston.Logger({
+const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
       handleExceptions: true,
@@ -12,8 +12,5 @@ var logger = new winston.Logger({
   ],
   exitOnError: false
 });
-
-// Use logger in favor of native
-console.log = logger.info;
 
 module.exports = logger;

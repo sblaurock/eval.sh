@@ -13,10 +13,12 @@
   "homepage": "https://github.com/sblaurock/evalsh#readme",
   "scripts": {
     "postinstall": "gulp build",
-    "start": "node app.js"
+    "start": "node index.js",
+    "lint": "eslint '**/*.js'"
   },
   "dependencies": {
     "babel-preset-es2015": "^6.5.0",
+    "babel-register": "^6.7.2",
     "body-parser": "^1.14.2",
     "express": "^4.13.4",
     "geoip-lite": "^1.1.6",

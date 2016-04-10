@@ -1,36 +1,32 @@
-var logger = require('../utils/logger');
-var shell = require('./shell');
+import logger from '../utils/logger';
+import * as Shell from './shell';
 
-var clients = {};
+const clients = {};
 
 // Handle socket interactions
-var start = function(http, options) {
-  var io = require('socket.io')(http, options.socket);
+export function start(http, options) {
+  const io = require('socket.io')(http, options.socket);
 
   // Handle connection
-  io.on('connection', function(socket) {
-    var id = socket.id;
+  io.on('connection', (socket) => {
+    const id = socket.id;
 
-    logger.info("[socket] %s connected", id);
+    logger.info(`[socket] ${id} connected`);
     clients[id] = socket;
 
     // Process "shell" command
-    socket.on('command', function(command) {
-      logger.info("[socket] %s sent command '%s'", id, command);
-      clients[id] && clients[id].emit('response', {
-        command: command,
-        response: shell.process(command, id)
-      })
+    socket.on('command', (command) => {
+      logger.info(`[socket] ${id} sent command '${command}'`);
+      clients[id].emit('response', {
+        command,
+        response: Shell.process(command, id)
+      });
     });
 
     // Handle disconnenct
-    socket.on('disconnect', function(socket) {
-      logger.info("[socket] %s disconnected", id);
+    socket.on('disconnect', () => {
+      logger.info(`[socket] ${id} disconnected`);
       delete clients[id];
     });
   });
-};
-
-module.exports = {
-  start: start
-};
+}
