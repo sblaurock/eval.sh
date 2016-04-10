@@ -16,6 +16,30 @@
     }
   };
 
+  // Menu items
+  const menu = [
+    {
+      type: 'action',
+      title: 'About',
+      action: 'cat about'
+    },
+    {
+      type: 'link',
+      title: 'Github',
+      link: 'https://github.com/sblaurock'
+    },
+    {
+      type: 'link',
+      title: 'Twitter',
+      link: 'https://twitter.com/sblaurock'
+    },
+    {
+      type: 'link',
+      title: 'LinkedIn',
+      link: 'https://www.linkedin.com/in/sblaurock'
+    }
+  ];
+
   const elements = {
     document: $(document),
     screen: $('.screen')
@@ -170,6 +194,17 @@
         if (window.app && window.app.user) {
           Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
         }
+      },
+
+      // Print application menu to screen
+      menu() {
+        let markup = '';
+
+        menu.forEach((item) => {
+          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
+        });
+
+        Output.write(markup);
       }
     };
 
@@ -243,6 +278,8 @@
           const nodeName = e.target.nodeName.toLowerCase();
           const charCode = e.which;
 
+          $('a').blur();
+
           // Up and down - recall command from history
           if (charCode === 38 || charCode === 40) {
             let command = '';
@@ -272,13 +309,25 @@
             }
           }
         });
+
+        elements.document.on('click', 'a', function click(event) {
+          const element = $(this);
+          const action = element.data('action');
+
+          if(action) {
+            event.preventDefault();
+
+            Shell.process(action);
+          }
+        });
       }
     };
   })();
 
   // Initialize
   Events.bind();
-  Output.write('Type "help" to get started');
+  Shell.process('menu');
+  Output.write('');
   Socket.connect();
   Socket.listen('response', (data) => {
     if (data.response === null) {

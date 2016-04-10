@@ -1,2 +1,8 @@
 # evalsh
-Personal site for @sblaurock.
+Personal website.
+
+### Setup
+    npm install; gulp
+
+### Usage
+    npm start

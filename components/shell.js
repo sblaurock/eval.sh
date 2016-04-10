@@ -41,18 +41,6 @@ const map = {
     } catch (e) {
       return `${sanitized}: No such file or directory`;
     }
-  },
-
-  // Print a string
-  echo(data) {
-    const string = data.args && data.args[0];
-
-    // Ensure a string was passed as an argument
-    if (!string) {
-      return '\n';
-    }
-
-    return string.replace(/["'\\]/g, '').replace('<', '&lt;').replace('>', '&gt;');
   }
 };
 
