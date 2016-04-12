@@ -6,6 +6,8 @@
       input: 'input',
       line: 'line',
       character: 'character',
+      animated: 'animated',
+      animatedIn: 'in',
       command: 'command',
       active: 'active',
       timestamp: 'timestamp',
@@ -63,7 +65,26 @@
         return '';
       }
 
-      return string.replace(/\n/g, '<br>').replace(/\t/g, options.space.repeat(4));
+      const spaced = string.replace(/\n/g, '<br>').replace(/\t/g, options.space.repeat(4));
+      const spacedNode = $(`<span>${spaced}</span>`).get(0);
+
+      // Recursively wrap all text nodes characters in a class so they can be animated
+      const recursiveReplace = (node) => {
+        if (node.nodeType === 3) {
+          const value = node.nodeValue.split('').join(`</span><span class="${options.classes.animated}">`);
+          const classified = $(`<span><span class="${options.classes.animated}">${value}</span></span>`);
+
+          node.parentNode.replaceChild(classified.get(0), node);
+        } else if (node.nodeType === 1) {
+          $(node).contents().each(function each() {
+            recursiveReplace(this);
+          });
+        }
+      };
+
+      recursiveReplace(spacedNode);
+
+      return spacedNode.outerHTML;
     };
 
     return {
@@ -74,7 +95,8 @@
       },
 
       // Write text to "screen"
-      write: (string, command) => {
+      write: (string, command, animate = true) => {
+        let index = 0;
         const formatted = format(string);
         const date = (new Date()).toLocaleTimeString();
         const timestamp = (command ? `<div class="${options.classes.timestamp} ${options.classes.text.comment}">${date}</div>` : '');
@@ -82,7 +104,28 @@
         const input = $(`<div class="${options.classes.input}"></div>`);
 
         $(`.${options.classes.input}`).remove();
-        elements.screen.append(contents);
+
+        if (animate) {
+          elements.screen.append(contents);
+
+          const animated = contents.find(`.${options.classes.animated}`);
+
+          (function loop() {
+            setTimeout(() => {
+              $(animated[index]).addClass(options.classes.animatedIn);
+
+              index++;
+
+              if (index !== animated.length) {
+                loop();
+              }
+            }, 0);
+          }());
+        } else {
+          contents.find(`.${options.classes.animated}`).addClass(options.classes.animatedIn);
+          elements.screen.append(contents);
+        }
+
         elements.screen.append(input);
         elements.screen.scrollTop(elements.screen[0].scrollHeight);
       }
@@ -258,7 +301,7 @@
 
           // Enter - submit command
           if (charCode === 13) {
-            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true);
+            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true, false);
 
             if (commandCharCount) {
               Shell.process(command);
@@ -270,7 +313,7 @@
 
           // Ctrl-c - submit empty command
           if (e.ctrlKey && charCode === 3) {
-            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true);
+            Output.write(`<span class="${options.classes.text.highlight}">${command}</span>`, true, false);
           }
         });
 
@@ -314,7 +357,7 @@
           const element = $(this);
           const action = element.data('action');
 
-          if(action) {
+          if (action) {
             event.preventDefault();
 
             Shell.process(action);
