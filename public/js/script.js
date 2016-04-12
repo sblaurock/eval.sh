@@ -359,7 +359,7 @@
 
           if (action) {
             event.preventDefault();
-
+            Output.write(`<span class="${options.classes.text.highlight}">${action}</span>`, true, false);
             Shell.process(action);
           }
         });

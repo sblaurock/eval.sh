@@ -3,6 +3,7 @@
   --textComment: rgba(67, 67, 69, 1);
   --textHighlight: rgba(174, 135, 136, 1);
   --textColor: rgba(215, 214, 177, 1);
+  --fontSize: 13px;
   --prompt: '# ';
   --promptColor: rgba(174, 135, 98, 1);
   --cursor: '\a0';
@@ -24,13 +25,13 @@ html, body {
 body {
   background: var(--background);
   font-family: monospace;
-  font-size: 12px;
+  font-size: var(--fontSize);
 }
 
 footer {
   position: absolute;
   bottom: 15px;
-  right: 16px;
+  right: 15px;
 }
 
 a {
@@ -58,7 +59,7 @@ a {
   overflow: hidden;
   width: calc(100% - (var(--horizontalPadding) * 2));
   height: calc(100% - (var(--verticalPadding) * 2));
-  line-height: 18px;
+  line-height: 150%;
 }
 
 .input {

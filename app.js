@@ -1,6 +1,3 @@
-// Initialize New Relic
-require('newrelic');
-
 // Application configuration
 const options = {
   port: 8080,
