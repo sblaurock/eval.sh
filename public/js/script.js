@@ -22,22 +22,27 @@
   const menu = [
     {
       type: 'action',
-      title: 'About',
+      title: 'about',
       action: 'cat about'
     },
     {
+      type: 'action',
+      title: 'experience',
+      action: 'cat experience'
+    },
+    {
       type: 'link',
-      title: 'Github',
+      title: 'github',
       link: 'https://github.com/sblaurock'
     },
     {
       type: 'link',
-      title: 'Twitter',
+      title: 'twitter',
       link: 'https://twitter.com/sblaurock'
     },
     {
       type: 'link',
-      title: 'LinkedIn',
+      title: 'linkedin',
       link: 'https://www.linkedin.com/in/sblaurock'
     }
   ];

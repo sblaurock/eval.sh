@@ -91,6 +91,10 @@ a {
 .line {
   word-wrap: break-word;
   width: 100%;
+
+  & span {
+    white-space: pre-wrap;
+  }
 }
 
 .timestamp {
