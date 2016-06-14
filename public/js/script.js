@@ -32,18 +32,23 @@
     },
     {
       type: 'link',
+      title: 'flickr',
+      link: 'https://www.flickr.com/photos/sblaurock'
+    },
+    {
+      type: 'link',
       title: 'github',
       link: 'https://github.com/sblaurock'
     },
     {
       type: 'link',
-      title: 'twitter',
-      link: 'https://twitter.com/sblaurock'
+      title: 'linkedin',
+      link: 'https://www.linkedin.com/in/sblaurock'
     },
     {
       type: 'link',
-      title: 'linkedin',
-      link: 'https://www.linkedin.com/in/sblaurock'
+      title: 'twitter',
+      link: 'https://twitter.com/sblaurock'
     }
   ];
 
