@@ -1,4 +1,4 @@
-(($, io) => {
+(($, io, _) => {
   const options = {
     debug: false,
     space: '&nbsp;',
@@ -282,19 +282,20 @@
   const Events = (() => {
     let typing = null;
     const typingBuffer = 500;
-    const lineHeight = 36;
 
     return {
       // Bind events
       bind: () => {
         // Listen for screen scroll
-        elements.screen.bind('mousewheel', (e) => {
+        elements.screen.bind('mousewheel', _.throttle(function(e) {
+          const lineHeight = $('.line').first().height();
+
           if (e.originalEvent.wheelDelta / 120 > 0) {
             elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
           } else {
             elements.screen.scrollTop(elements.screen.scrollTop() + lineHeight);
           }
-        });
+        }, 30));
 
         // Listen for keypress, write to input
         elements.document.keypress((e) => {
@@ -394,4 +395,4 @@
       Output.write(data.response);
     }
   });
-})(window.jQuery, window.io);
+})(window.jQuery, window.io, window._);
