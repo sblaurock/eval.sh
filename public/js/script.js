@@ -31,6 +31,11 @@
       action: 'cat experience'
     },
     {
+      type: 'action',
+      title: 'projects',
+      action: 'cat projects'
+    },
+    {
       type: 'link',
       title: 'flickr',
       link: 'https://www.flickr.com/photos/sblaurock'
