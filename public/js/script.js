@@ -36,9 +36,9 @@
       action: 'cat projects'
     },
     {
-      type: 'link',
-      title: 'flickr',
-      link: 'https://www.flickr.com/photos/sblaurock'
+      type: 'action',
+      title: 'photography',
+      action: 'cat photography'
     },
     {
       type: 'link',
