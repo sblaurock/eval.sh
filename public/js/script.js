@@ -383,14 +383,35 @@
     };
   })();
 
+  // Handle window location
+  const Location = {
+    process: () => {
+      if (window.app && window.app.directive) {
+        const match = _.find(menu, {
+          type: 'action',
+          title: window.app.directive
+        });
+
+        if (match && match.action) {
+          Output.write(`<span class="${options.classes.text.highlight}">${match.action}</span>`, true, false);
+          Shell.process(match.action);
+        } else {
+          Shell.process('menu');
+        }
+      } else {
+        Shell.process('menu');
+      }
+    }
+  };
+
   // Initialize
   Events.bind();
-  Shell.process('menu');
   Output.write('');
   Socket.connect();
+  Location.process();
   Socket.listen('response', (data) => {
     if (data.response === null) {
-      Output.write(`${data.command}: command not found`);
+      Output.write(`<strong>${data.command}</strong>: command not found`);
     } else {
       Output.write(data.response);
     }

@@ -34,7 +34,7 @@ nunjucks.configure('views', {
   watch: true
 });
 
-app.get('/', (req, res) => {
+app.get('/:directive*?', (req, res) => {
   const ipv4 = req.clientIp;
   const geo = (ipv4 ? geoip.lookup(ipv4) : null);
 
@@ -43,7 +43,8 @@ app.get('/', (req, res) => {
       ip: (req.ip === '::1' ? 'localhost' : ipv4),
       name: 'user',
       location: geo && `${geo.region} ${geo.country}`
-    }
+    },
+    directive: req.params.directive || ''
   });
 });
 
