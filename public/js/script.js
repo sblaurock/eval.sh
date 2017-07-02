@@ -259,7 +259,7 @@
         let markup = '';
 
         menu.forEach((item) => {
-          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
+          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
         });
 
         Output.write(markup);
@@ -372,11 +372,14 @@
         elements.document.on('click', 'a', function click(event) {
           const element = $(this);
           const action = element.data('action');
+          const title = element.data('title');
 
           if (action) {
             event.preventDefault();
             Output.write(`<span class="${options.classes.text.highlight}">${action}</span>`, true, false);
             Shell.process(action);
+
+            window.history.replaceState({}, title, `/${title}`);
           }
         });
       }
