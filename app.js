@@ -34,6 +34,10 @@ nunjucks.configure('views', {
   watch: true
 });
 
+app.get('/google01b3e538f88979e7.html', (req, res) => {
+  res.render('google01b3e538f88979e7.html');
+});
+
 app.get('/:directive*?', (req, res) => {
   const ipv4 = req.clientIp;
   const geo = (ipv4 ? geoip.lookup(ipv4) : null);
