@@ -16,6 +16,7 @@ import geoip from 'geoip-lite';
 import requestIp from 'request-ip';
 import * as Socket from './components/socket';
 import * as System from './utils/system';
+import enforce from 'express-sslify';
 
 const app = express();
 const server = new http.Server(app);
@@ -26,6 +27,10 @@ app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
 app.use(requestIp.mw());
 app.set('port', (process.env.PORT || options.port));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+}
 
 // Setup Nunjucks
 nunjucks.configure('views', {
