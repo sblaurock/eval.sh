@@ -288,7 +288,7 @@
       bind: () => {
         // Listen for screen scroll
         elements.screen.bind('mousewheel', _.throttle(function(e) {
-          const lineHeight = $('.line').first().height();
+          const lineHeight = $('.' + options.classes.line).last().height();
 
           if (e.originalEvent.wheelDelta / 120 > 0) {
             elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
