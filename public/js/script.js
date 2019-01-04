@@ -52,8 +52,8 @@
     },
     {
       type: 'link',
-      title: 'twitter',
-      link: 'https://twitter.com/sblaurock'
+      title: 'resume',
+      link: 'https://drive.google.com/file/d/1Iru8XRflKYD3gxpZD0jquPdUc4lqnb1j/view'
     }
   ];
 
