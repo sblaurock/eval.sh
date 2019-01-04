@@ -53,7 +53,7 @@
     {
       type: 'link',
       title: 'resume',
-      link: 'https://drive.google.com/file/d/1Iru8XRflKYD3gxpZD0jquPdUc4lqnb1j/view'
+      link: 'https://drive.google.com/open?id=1DnoYmlobyD3qwJvoTdXqKSE1TIFYnZoN'
     }
   ];
 
