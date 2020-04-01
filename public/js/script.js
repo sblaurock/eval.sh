@@ -52,6 +52,11 @@
     },
     {
       type: 'link',
+      title: 'instagram',
+      link: 'https://www.instagram.com/sblaurock'
+    },
+    {
+      type: 'link',
       title: 'resume',
       link: 'https://drive.google.com/open?id=156WOQOj_Oatt_Of_skoIPd1KlMaREPM7'
     }
@@ -288,7 +293,7 @@
       bind: () => {
         // Listen for screen scroll
         elements.screen.bind('mousewheel', _.throttle(function(e) {
-          const lineHeight = $('.' + options.classes.line).last().height();
+          const lineHeight = $('.' + options.classes.input).last().outerHeight();
 
           if (e.originalEvent.wheelDelta / 120 > 0) {
             elements.screen.scrollTop(elements.screen.scrollTop() - lineHeight);
