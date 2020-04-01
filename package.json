@@ -12,13 +12,9 @@
   "license": "ISC",
   "homepage": "https://github.com/sblaurock/evalsh#readme",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "postinstall": "gulp build",
     "start": "node index.js",
     "lint": "eslint '**/*.js'"
-  },
-  "resolutions": {
-    "graceful-fs": "4.2.3"
   },
   "dependencies": {
     "babel-preset-es2015": "^6.5.0",
