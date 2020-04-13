@@ -1,9 +1,8 @@
 var gulp = require('gulp');
-var runSequence = require('run-sequence');
+var runSequence = require('gulp4-run-sequence');
 var watch = require('gulp-watch');
 var print = require('gulp-print');
 var jshint = require('gulp-jshint');
-var csslint = require('gulp-csslint');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var postcss = require('gulp-postcss');
@@ -116,19 +115,9 @@ gulp.task('styles', function() {
       }));
 });
 
-// Lint CSS
-gulp.task('lint-css', function() {
-    return gulp.src(options.dir.css + '/' + options.output.css)
-      .pipe(csslint(options.lint.css.options))
-      .pipe(print(function(filepath) {
-        return " - " + filepath;
-      }))
-      .pipe(csslint.reporter());
-});
-
 // Build
 gulp.task('build', function(callback) {
-  runSequence('lint-js', 'scripts', 'header','styles', 'lint-css', callback);
+  runSequence('lint-js', 'scripts', 'header','styles', callback);
 });
 
 // Watch for changes
