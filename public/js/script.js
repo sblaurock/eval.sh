@@ -18,6 +18,11 @@
     }
   };
 
+  const welcomeContent = `<span class="text-comment">/*
+ * welcome to the ~ of @sblaurock
+ */
+</span>`;
+
   // Menu items
   const menu = [
     {
@@ -116,7 +121,7 @@
       // Clear "screen"
       clear: () => {
         elements.screen.html('');
-        Output.write('');
+        Output.write('', false, false);
       },
 
       // Write text to "screen"
@@ -287,7 +292,7 @@
           markup += '\n';
         }
 
-        Output.write(markup);
+        Output.write(markup, false, false);
       },
 
       // "Deny access" and print message to "screen"
@@ -432,8 +437,6 @@
   // Handle window location
   const Location = {
     process: () => {
-      const menuDelay = 500;
-
       if (window.app && window.app.directive && !Mobile.isMobile()) {
         const match = _.find(menu, {
           type: 'action',
@@ -441,22 +444,17 @@
         });
 
         if (match && match.action) {
+          Output.write(welcomeContent, false, false);
           Shell.process('menu');
-          setTimeout(() => {
-            Output.write(`<span class="${options.classes.text.highlight}">${match.action}</span>`, true, false);
-            Shell.process(match.action);
-          }, menuDelay);
+          Output.write(`<span class="${options.classes.text.highlight}">${match.action}</span>`, true, false);
+          Shell.process(match.action);
         } else {
-          Shell.process('cat welcome');
-          setTimeout(() => {
-            Shell.process('menu');
-          }, menuDelay);
+          Output.write(welcomeContent, false, false);
+          Shell.process('menu');
         }
       } else {
-        Shell.process('cat welcome');
-        setTimeout(() => {
-          Shell.process('menu');
-        }, menuDelay);
+        Output.write(welcomeContent, false, false);
+        Shell.process('menu');
       }
     }
   };
@@ -482,7 +480,7 @@
 
   // Initialize
   Events.bind();
-  Output.write('');
+  Output.write('', false, false);
   Socket.connect();
   Mobile.process();
   Location.process();
