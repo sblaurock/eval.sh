@@ -12,7 +12,7 @@ const sanitize = (string) => {
   }
 
   // Force alphanumerics
-  return string.replace(/\W+/g, ' ');
+  return string.replace(/\W+\./g, ' ');
 };
 
 // Commands
