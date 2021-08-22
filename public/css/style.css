@@ -8,13 +8,15 @@
   --textHighlight: rgba(174, 135, 136, 1);
   --textColor: rgba(215, 214, 177, 1);
   --fontSize: 14px;
-  --fontSizeMobile: 28px;
+  --fontSizeMobile: 12px;
   --prompt: '# ';
   --promptColor: rgba(174, 135, 98, 1);
   --cursor: '\a0';
   --blinkTime: 2s;
   --verticalPadding: 60px;
   --horizontalPadding: 70px;
+  --verticalPaddingMobile: 30px;
+  --horizontalPaddingMobile: 35px;
   --crtStrength: .6;
 }
 
@@ -135,6 +137,12 @@ a {
   width: calc(100% - (var(--horizontalPadding) * 2));
   height: calc(100% - (var(--verticalPadding) * 2));
   line-height: 175%;
+}
+.mobile .screen {
+  top: var(--verticalPaddingMobile);
+  left: var(--horizontalPaddingMobile);
+  width: calc(100% - (var(--horizontalPaddingMobile) * 2));
+  height: calc(100% - (var(--verticalPaddingMobile) * 2));
 }
 .screen::before {
   content: '';

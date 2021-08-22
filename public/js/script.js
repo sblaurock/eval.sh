@@ -23,37 +23,44 @@
     {
       type: 'action',
       title: 'about',
-      action: 'cat about'
+      action: 'cat about',
+      showInMobile: true
     },
     {
       type: 'action',
       title: 'experience',
-      action: 'cat experience'
+      action: 'cat experience',
+      showInMobile: false
     },
     {
       type: 'action',
       title: 'projects',
-      action: 'cat projects'
+      action: 'cat projects',
+      showInMobile: false
     },
     {
       type: 'link',
       title: 'photography',
-      link: 'https://www.flickr.com/sblaurock'
+      link: 'https://www.flickr.com/sblaurock',
+      showInMobile: true
     },
     {
       type: 'link',
       title: 'github',
-      link: 'https://github.com/sblaurock'
+      link: 'https://github.com/sblaurock',
+      showInMobile: true
     },
     {
       type: 'link',
       title: 'linkedin',
-      link: 'https://www.linkedin.com/in/sblaurock'
+      link: 'https://www.linkedin.com/in/sblaurock',
+      showInMobile: true
     },
     {
       type: 'link',
       title: 'resume',
-      link: 'https://drive.google.com/open?id=156WOQOj_Oatt_Of_skoIPd1KlMaREPM7'
+      link: 'https://drive.google.com/open?id=156WOQOj_Oatt_Of_skoIPd1KlMaREPM7',
+      showInMobile: true
     }
   ];
 
@@ -266,14 +273,17 @@
 
       // Print application menu to "screen"
       menu() {
+        const isMobile = Mobile.isMobile();
         let markup = '';
-        let delimiter = Mobile.isMobile() ? '\n' : '\t';
+        let delimiter = isMobile ? '\n' : '\t';
 
         menu.forEach((item) => {
-          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>${delimiter}`;
+          if (!isMobile || (isMobile && item.showInMobile)) {
+            markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>${delimiter}`;
+          }
         });
 
-        if (Mobile.isMobile()) {
+        if (isMobile) {
           markup += '\n';
         }
 
