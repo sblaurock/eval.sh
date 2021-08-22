@@ -59,7 +59,8 @@
 
   const elements = {
     document: $(document),
-    screen: $('.screen')
+    screen: $('.screen'),
+    body: $('body'),
   };
 
   // Log to console
@@ -266,9 +267,10 @@
       // Print application menu to "screen"
       menu() {
         let markup = '';
+        let delimiter = Mobile.isMobile() ? '\n' : '\t';
 
         menu.forEach((item) => {
-          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
+          markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>${delimiter}`;
         });
 
         Output.write(markup);
@@ -411,7 +413,7 @@
   // Handle window location
   const Location = {
     process: () => {
-      if (window.app && window.app.directive) {
+      if (window.app && window.app.directive && !Mobile.isMobile()) {
         const match = _.find(menu, {
           type: 'action',
           title: window.app.directive
@@ -429,10 +431,30 @@
     }
   };
 
+  // Handle mobile detection
+  const Mobile = (() => {
+    let isMobile = false;
+
+    // Add class name to body to apply mobile styling
+    return {
+      process: () => {
+        if (navigator.userAgentData.mobile) {
+          isMobile = true;
+
+          elements.body.addClass('mobile');
+        }
+      },
+
+      // Return boolean indicating if browser is operating in mobile environment
+      isMobile: () => isMobile,
+    };
+  })();
+
   // Initialize
   Events.bind();
   Output.write('');
   Socket.connect();
+  Mobile.process();
   Location.process();
   Socket.listen('response', (data) => {
     if (data.response === null) {

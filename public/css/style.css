@@ -4,6 +4,7 @@
   --textHighlight: rgba(174, 135, 136, 1);
   --textColor: rgba(215, 214, 177, 1);
   --fontSize: 14px;
+  --fontSizeMobile: 24px;
   --prompt: '# ';
   --promptColor: rgba(174, 135, 98, 1);
   --cursor: '\a0';
@@ -26,6 +27,9 @@ body {
   background: var(--background);
   font-family: monospace;
   font-size: var(--fontSize);
+}
+body.mobile {
+  font-size: var(--fontSizeMobile);
 }
 
 footer {
@@ -81,6 +85,9 @@ a {
   &.active:after {
     opacity: 1 !important;
   }
+}
+.mobile .input {
+  display: none;
 }
 
 .command:before {
