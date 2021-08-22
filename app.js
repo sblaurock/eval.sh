@@ -28,7 +28,7 @@ app.use(express.static(`${__dirname}/public`));
 app.use(requestIp.mw());
 app.set('port', (process.env.PORT || options.port));
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && process.env.FORCE_HTTPS === 'true') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 

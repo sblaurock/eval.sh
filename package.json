@@ -1,16 +1,16 @@
 {
-  "name": "evalsh",
+  "name": "eval.sh",
   "version": "1.0.0",
-  "description": "Personal site for @sblaurock.",
+  "description": "~ of sblaurock",
   "main": "index.js",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sblaurock/evalsh.git"
+    "url": "git+https://github.com/sblaurock/eval.sh.git"
   },
   "author": "sblaurock",
   "license": "ISC",
-  "homepage": "https://github.com/sblaurock/evalsh#readme",
+  "homepage": "https://github.com/sblaurock/eval.sh#readme",
   "scripts": {
     "postinstall": "gulp build",
     "start": "node index.js",
