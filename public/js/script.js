@@ -74,6 +74,8 @@
 
   // Handle "screen"
   const Output = (() => {
+    let isCurrentlyAnimating = false;
+
     // Format output string
     const format = (string = null) => {
       if (!string || typeof string !== 'string') {
@@ -125,6 +127,8 @@
 
           const animated = contents.find(`.${options.classes.animated}`);
 
+          isCurrentlyAnimating = true;
+
           (function loop() {
             setTimeout(() => {
               $(animated[index]).addClass(options.classes.animatedIn);
@@ -133,6 +137,8 @@
 
               if (index !== animated.length) {
                 loop();
+              } else {
+                isCurrentlyAnimating = false;
               }
             }, 0);
           }());
@@ -143,7 +149,10 @@
 
         elements.screen.append(input);
         elements.screen.scrollTop(elements.screen[0].scrollHeight);
-      }
+      },
+
+      // Get status of current animation
+      isCurrentlyAnimating: () => isCurrentlyAnimating,
     };
   })();
 
@@ -250,7 +259,7 @@
       // Print user information to "screen"
       whoami() {
         if (window.app && window.app.user) {
-          Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
+          Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}\n\n`);
         }
       },
 
@@ -262,7 +271,7 @@
           markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
         });
 
-        Output.write(markup);
+        Output.write(`${markup}\n\n`);
       }
     };
 
@@ -376,10 +385,13 @@
 
           if (action) {
             event.preventDefault();
-            Output.write(`<span class="${options.classes.text.highlight}">${action}</span>`, true, false);
-            Shell.process(action);
 
-            window.history.replaceState({}, title, `/${title}`);
+            if (!Output.isCurrentlyAnimating()) {
+              Output.write(`<span class="${options.classes.text.highlight}">${action}</span>`, true, false);
+              Shell.process(action);
+
+              window.history.replaceState({}, title, `/${title}`);
+            }
           }
         });
       }
@@ -414,9 +426,9 @@
   Location.process();
   Socket.listen('response', (data) => {
     if (data.response === null) {
-      Output.write(`<strong>${data.command}</strong>: command not found`);
+      Output.write(`<strong>${data.command}</strong>: command not found\n\n`);
     } else {
-      Output.write(data.response);
+      Output.write(`${data.response}\n`);
     }
   });
 })(window.jQuery, window.io, window._);
