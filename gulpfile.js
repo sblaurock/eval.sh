@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var runSequence = require('gulp4-run-sequence');
-var watch = require('gulp-watch');
 var print = require('gulp-print');
 var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
@@ -13,10 +12,6 @@ var babel = require("gulp-babel");
 // Environment and options
 var pkg = require('./package.json');
 var options = {
-  watchFiles: [
-    'public/**',
-    'views/**'
-  ],
   lint: {
     css: {
       options: {
@@ -118,11 +113,6 @@ gulp.task('styles', function() {
 // Build
 gulp.task('build', function(callback) {
   runSequence('lint-js', 'scripts', 'header','styles', callback);
-});
-
-// Watch for changes
-gulp.task('watch', function() {
-  return gulp.watch(options.watchFiles, ['build']);
 });
 
 // Default (development)
