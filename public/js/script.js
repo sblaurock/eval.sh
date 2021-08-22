@@ -36,9 +36,9 @@
       action: 'cat projects'
     },
     {
-      type: 'action',
+      type: 'link',
       title: 'photography',
-      action: 'cat photography'
+      action: 'https://www.flickr.com/sblaurock'
     },
     {
       type: 'link',
@@ -49,11 +49,6 @@
       type: 'link',
       title: 'linkedin',
       link: 'https://www.linkedin.com/in/sblaurock'
-    },
-    {
-      type: 'link',
-      title: 'instagram',
-      link: 'https://www.instagram.com/sblaurock'
     },
     {
       type: 'link',
