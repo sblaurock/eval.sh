@@ -422,6 +422,8 @@
   // Handle window location
   const Location = {
     process: () => {
+      const menuDelay = 500;
+
       if (window.app && window.app.directive && !Mobile.isMobile()) {
         const match = _.find(menu, {
           type: 'action',
@@ -429,13 +431,22 @@
         });
 
         if (match && match.action) {
-          Output.write(`<span class="${options.classes.text.highlight}">${match.action}</span>`, true, false);
-          Shell.process(match.action);
-        } else {
           Shell.process('menu');
+          setTimeout(() => {
+            Output.write(`<span class="${options.classes.text.highlight}">${match.action}</span>`, true, false);
+            Shell.process(match.action);
+          }, menuDelay);
+        } else {
+          Shell.process('cat welcome');
+          setTimeout(() => {
+            Shell.process('menu');
+          }, menuDelay);
         }
       } else {
-        Shell.process('menu');
+        Shell.process('cat welcome');
+        setTimeout(() => {
+          Shell.process('menu');
+        }, menuDelay);
       }
     }
   };
