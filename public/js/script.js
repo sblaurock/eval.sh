@@ -259,11 +259,11 @@
       // Print user information to "screen"
       whoami() {
         if (window.app && window.app.user) {
-          Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}\n\n`);
+          Output.write(`${window.app.user.name}@${window.app.user.ip} / ${window.app.user.location}`);
         }
       },
 
-      // Print application menu to screen
+      // Print application menu to "screen"
       menu() {
         let markup = '';
 
@@ -271,7 +271,17 @@
           markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>\t`;
         });
 
-        Output.write(`${markup}\n\n`);
+        Output.write(markup);
+      },
+
+      // "Deny access" and print message to "screen"
+      'sudo'() {
+          Output.write(`${window.app.user.name} is not in the sudoers file. This incident will be reported.`);
+      },
+
+      // "Deny access" and print message to "screen"
+      'sudo su'() {
+          Output.write(`${window.app.user.name} is not in the sudoers file. This incident will be reported.`);
       }
     };
 
@@ -426,9 +436,9 @@
   Location.process();
   Socket.listen('response', (data) => {
     if (data.response === null) {
-      Output.write(`<strong>${data.command}</strong>: command not found\n\n`);
+      Output.write(`<strong>${data.command}</strong>: command not found`);
     } else {
-      Output.write(`${data.response}\n`);
+      Output.write(data.response);
     }
   });
 })(window.jQuery, window.io, window._);
