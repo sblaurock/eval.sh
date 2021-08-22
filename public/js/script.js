@@ -38,7 +38,7 @@
     {
       type: 'link',
       title: 'photography',
-      action: 'https://www.flickr.com/sblaurock'
+      link: 'https://www.flickr.com/sblaurock'
     },
     {
       type: 'link',
