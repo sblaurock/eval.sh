@@ -273,6 +273,10 @@
           markup += `<a href="${item.link || '#'}" data-action="${item.action || ''}" data-title="${item.title || ''}" rel="nofollow" target="_blank">${item.title}</a>${delimiter}`;
         });
 
+        if (Mobile.isMobile()) {
+          markup += '\n';
+        }
+
         Output.write(markup);
       },
 
@@ -399,6 +403,11 @@
             event.preventDefault();
 
             if (!Output.isCurrentlyAnimating()) {
+              if (Mobile.isMobile()) {
+                Output.clear();
+                Shell.process('menu');
+              }
+
               Output.write(`<span class="${options.classes.text.highlight}">${action}</span>`, true, false);
               Shell.process(action);
 
