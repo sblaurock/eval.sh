@@ -18,10 +18,7 @@
     }
   };
 
-  const welcomeContent = `<span class="text-comment">/*
- * welcome to the ~ of @sblaurock
- */
-</span>`;
+  const welcomeContent = `<span class="text-comment">// 👋 welcome to the 🏠 of @sblaurock\n\n</span>`;
 
   // Menu items
   const menu = [
@@ -41,7 +38,7 @@
       type: 'action',
       title: 'projects',
       action: 'cat projects',
-      showInMobile: false
+      showInMobile: true
     },
     {
       type: 'link',
