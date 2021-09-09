@@ -1,4 +1,4 @@
-# evalsh
+# eval.sh
 Personal website.
 
 ### Setup
