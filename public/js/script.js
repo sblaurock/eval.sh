@@ -42,7 +42,7 @@
     },
     {
       type: 'link',
-      title: 'photography',
+      title: 'travels',
       link: 'https://www.flickr.com/sblaurock',
       showInMobile: true
     },
