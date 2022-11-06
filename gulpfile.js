@@ -5,7 +5,7 @@ var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var postcss = require('gulp-postcss');
-var minify = require('gulp-minify-css');
+var clean = require('gulp-clean-css');
 var header = require('gulp-header');
 var babel = require("gulp-babel");
 
@@ -103,7 +103,7 @@ gulp.task('styles', function() {
       .pipe(postcss([
         require("postcss-cssnext")()
       ]))
-      .pipe(minify())
+      .pipe(clean())
       .pipe(gulp.dest(options.dir.css))
       .pipe(print(function(filepath) {
           return "   > " + filepath;
