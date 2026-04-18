@@ -61,7 +61,7 @@
     {
       type: 'link',
       title: 'resume',
-      link: 'https://drive.google.com/open?id=156WOQOj_Oatt_Of_skoIPd1KlMaREPM7',
+      link: 'https://resume.eval.sh',
       showInMobile: true
     }
   ];
